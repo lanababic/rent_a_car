@@ -1,0 +1,51 @@
+package model;
+import enums.*;
+import java.time.*;
+
+public class Klijent extends Osoba {
+	private KategorijaKlijenta kategorija;
+	private LocalDate datumVozacke;
+	private int brojKasnjenja;
+	
+	public Klijent(String ime, String prezime, Pol pol, LocalDate datumRodj, String telefon, String adresa,
+			String korisnickoIme, String lozinka, KategorijaKlijenta kategorija, LocalDate datumVozacke,
+			int brojKasnjenja) {
+		super(ime, prezime, pol, datumRodj, telefon, adresa, korisnickoIme, lozinka);
+		this.kategorija = kategorija;
+		this.datumVozacke = datumVozacke;
+		this.brojKasnjenja = brojKasnjenja;
+	}
+
+	public KategorijaKlijenta getKategorija() {
+		return kategorija;
+	}
+
+	public void setKategorija(KategorijaKlijenta kategorija) {
+		this.kategorija = kategorija;
+	}
+
+	public LocalDate getDatumVozacke() {
+		return datumVozacke;
+	}
+
+	public void setDatumVozacke(LocalDate datumVozacke) {
+		this.datumVozacke = datumVozacke;
+	}
+
+	public int getBrojKasnjenja() {
+		return brojKasnjenja;
+	}
+
+	public void setBrojKasnjenja(int brojKasnjenja) {
+		this.brojKasnjenja = brojKasnjenja;
+	}
+
+	@Override
+	public String toString() {
+		return "Klijent [kategorija=" + kategorija + ", datumVozacke=" + datumVozacke + ", brojKasnjenja="
+				+ brojKasnjenja + "]";
+	}
+	
+	
+
+}
