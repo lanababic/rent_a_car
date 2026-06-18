@@ -5,11 +5,11 @@ import java.time.LocalDate;
 public class Zaposleni extends Osoba {
 	private StrucnaSprema sprema;
 	private int staz;
-	private int osnovnaPlata;
+	private double osnovnaPlata;
 
-	public Zaposleni(String ime, String prezime, Pol pol, LocalDate datumRodj, String telefon, String adresa,
-			String korisnickoIme, String lozinka, StrucnaSprema sprema, int staz, int osnovnaPlata) {
-		super(ime, prezime, pol, datumRodj, telefon, adresa, korisnickoIme, lozinka);
+	public Zaposleni(String ime, String prezime, Pol pol, LocalDate datumRodj, String telefon, String email,
+			String korisnickoIme, String lozinka, StrucnaSprema sprema, int staz, double osnovnaPlata) {
+		super(ime, prezime, pol, datumRodj, telefon, email, korisnickoIme, lozinka);
 		this.sprema = sprema;
 		this.staz = staz;
 		this.osnovnaPlata = osnovnaPlata;
@@ -36,7 +36,7 @@ public class Zaposleni extends Osoba {
 		this.staz = staz;
 	}
 
-	public int getOsnovnaPlata() {
+	public double getOsnovnaPlata() {
 		return osnovnaPlata;
 	}
 
@@ -44,15 +44,4 @@ public class Zaposleni extends Osoba {
 		this.osnovnaPlata = osnovnaPlata;
 	}
 	
-	public double izracunajPlatu() {
-		double koeficijent = this.sprema.getKoefijent();
-		double plata = this.osnovnaPlata *(koeficijent + 0.004*this.staz);
-		return plata;
-	}
-
-	public static void main(String[] args) {
-		// TODO Auto-generated method stub
-
-	}
-
 }

@@ -7,10 +7,10 @@ public class Klijent extends Osoba {
 	private LocalDate datumVozacke;
 	private int brojKasnjenja;
 	
-	public Klijent(String ime, String prezime, Pol pol, LocalDate datumRodj, String telefon, String adresa,
-			String korisnickoIme, String lozinka, KategorijaKlijenta kategorija, LocalDate datumVozacke,
+	public Klijent(String ime, String prezime, Pol pol, LocalDate datumRodj, String telefon, String email,
+			 String lozinka, KategorijaKlijenta kategorija, LocalDate datumVozacke,
 			int brojKasnjenja) {
-		super(ime, prezime, pol, datumRodj, telefon, adresa, korisnickoIme, lozinka);
+		super(ime, prezime, pol, datumRodj, telefon, email, email, lozinka);
 		this.kategorija = kategorija;
 		this.datumVozacke = datumVozacke;
 		this.brojKasnjenja = brojKasnjenja;

@@ -9,12 +9,12 @@ public abstract class Osoba {
 	private Pol pol;
 	private LocalDate datumRodj;
 	private String telefon;
-	private String adresa;
+	private String email;
 	private String korisnickoIme;
 	private String lozinka;
 	
 
-	public Osoba(String ime, String prezime, Pol pol, LocalDate datumRodj, String telefon, String adresa,
+	public Osoba(String ime, String prezime, Pol pol, LocalDate datumRodj, String telefon, String email,
 			String korisnickoIme, String lozinka) {
 		super();
 		this.ime = ime;
@@ -22,7 +22,7 @@ public abstract class Osoba {
 		this.pol = pol;
 		this.datumRodj = datumRodj;
 		this.telefon = telefon;
-		this.adresa = adresa;
+		this.email = email;
 		this.korisnickoIme = korisnickoIme;
 		this.lozinka = lozinka;
 	}
@@ -31,7 +31,7 @@ public abstract class Osoba {
 	@Override
 	public String toString() {
 		return "Klijent [ime=" + ime + ", prezime=" + prezime + ", pol=" + pol + ", datumRodj=" + datumRodj
-				+ ", telefon=" + telefon + ", adresa=" + adresa + ", korisnickoIme=" + korisnickoIme + ", lozinka="
+				+ ", telefon=" + telefon + ", email=" + email + ", korisnickoIme=" + korisnickoIme + ", lozinka="
 				+ lozinka + "]";
 	}
 
@@ -86,13 +86,13 @@ public abstract class Osoba {
 	}
 
 
-	public String getAdresa() {
-		return adresa;
+	public String getEmail() {
+		return email;
 	}
 
 
-	public void setAdresa(String adresa) {
-		this.adresa = adresa;
+	public void setEmail(String email) {
+		this.email = email;
 	}
 
 

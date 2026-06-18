@@ -3,18 +3,18 @@ import enums.*;
 import java.time.*;
 
 public class DodatnaUsluga {
-	private int idDodtneUsluge;
+	private int idDodatneUsluge;
 	private String naziv;
-	public DodatnaUsluga(int idDodtneUsluge, String naziv) {
+	public DodatnaUsluga(int idDodatneUsluge, String naziv) {
 		super();
-		this.idDodtneUsluge = idDodtneUsluge;
+		this.idDodatneUsluge = idDodatneUsluge;
 		this.naziv = naziv;
 	}
-	public int getIdDodtneUsluge() {
-		return idDodtneUsluge;
+	public int getIdDodatneUsluge() {
+		return idDodatneUsluge;
 	}
-	public void setIdDodtneUsluge(int idDodtneUsluge) {
-		this.idDodtneUsluge = idDodtneUsluge;
+	public void setIdDodtneUsluge(int idDodatneUsluge) {
+		this.idDodatneUsluge = idDodatneUsluge;
 	}
 	public String getNaziv() {
 		return naziv;
@@ -24,7 +24,7 @@ public class DodatnaUsluga {
 	}
 	@Override
 	public String toString() {
-		return "DodatnaUsluga [idDodtneUsluge=" + idDodtneUsluge + ", naziv=" + naziv + "]";
+		return "DodatnaUsluga [idDodtneUsluge=" + idDodatneUsluge + ", naziv=" + naziv + "]";
 	}
 	
 }

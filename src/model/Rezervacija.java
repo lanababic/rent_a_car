@@ -11,16 +11,18 @@ public class Rezervacija {
 	private StatusRezervacije status;
 	private int osnovnaCena;
 	private ArrayList<DodatnaUsluga> listaDodatnihUsluga;
+	private LocalDate datumPravljenja;
 	public Rezervacija(int idRezervacije, ModelVozila modelVozila, LocalDate datumOd, LocalDate datumDo,
-			StatusRezervacije status, int osnovnaCena) {
+			 int osnovnaCena, LocalDate datumPravljenja) {
 		super();
 		this.idRezervacije = idRezervacije;
 		this.modelVozila = modelVozila;
 		this.datumOd = datumOd;
 		this.datumDo = datumDo;
-		this.status = status;
+		this.status = StatusRezervacije.NA_CEKANJU;
 		this.osnovnaCena = osnovnaCena;
 		this.listaDodatnihUsluga = new ArrayList<DodatnaUsluga>();
+		this.datumPravljenja = datumPravljenja;
 	}
 	@Override
 	public String toString() {
@@ -69,4 +71,10 @@ public class Rezervacija {
 	public void dodajDodatnuUslugu(DodatnaUsluga usluga) {
         this.listaDodatnihUsluga.add(usluga);
     }
+	public LocalDate getDatumPravljenja() {
+		return datumPravljenja;
+	}
+	public void setDatumPravljenja(LocalDate datumPravljenja) {
+		this.datumPravljenja = datumPravljenja;
+	}
 }
