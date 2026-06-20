@@ -38,7 +38,17 @@ public class OsobaMenadzer {
 			List<String> lines = Files.readAllLines(Paths.get(putanjaKlijenti));
 			for (String line: lines) {
 				String[] parts = line.split(";");
-				Klijent k = new Klijent(parts[0], parts[1], Pol.valueOf(parts[2]), LocalDate.parse(parts[3]),parts[4], parts[5],parts[6],  KategorijaKlijenta.valueOf(parts[7]),LocalDate.parse(parts[8]), Integer.parseInt(parts[9]));				
+				Klijent k = new Klijent(
+						parts[0],								//ime
+						parts[1],								//prezime
+						Pol.valueOf(parts[2]),					//pol
+						LocalDate.parse(parts[3]),				//datum Rodj
+						parts[4],								//relfon
+						parts[5],								//email
+						parts[6],								//lozinka
+						KategorijaKlijenta.valueOf(parts[7]),	//kategirjaKlijenta
+						LocalDate.parse(parts[8]),				//datumVozacke
+						Integer.parseInt(parts[9]));			//brojKasnjenja
 				this.sviKlijenti.add(k);
 			}
 		}
@@ -58,7 +68,7 @@ public class OsobaMenadzer {
 	                Pol.valueOf(parts[2]),                  // pol (enum)
 	                LocalDate.parse(parts[3]),              // datumRodj
 	                parts[4],                               // telefon
-	                parts[5],                               // adresa
+	                parts[5],                               // email
 	                parts[6],                               // korisnickoIme
 	                parts[7],                               // lozinka
 	                StrucnaSprema.valueOf(parts[8]),        // sprema (enum)
@@ -84,7 +94,7 @@ public class OsobaMenadzer {
 	                Pol.valueOf(parts[2]),                  // pol (enum)
 	                LocalDate.parse(parts[3]),              // datumRodj
 	                parts[4],                               // telefon
-	                parts[5],                               // adresa
+	                parts[5],                               // email
 	                parts[6],                               // korisnickoIme
 	                parts[7],                               // lozinka
 	                StrucnaSprema.valueOf(parts[8]),        // sprema (enum)
@@ -107,7 +117,6 @@ public class OsobaMenadzer {
                     k.getDatumRodj() + ";" + 
                     k.getTelefon() + ";" + 
                     k.getEmail() + ";" + 
-                    k.getKorisnickoIme() + ";" + 
                     k.getLozinka() + ";" + 
                     k.getKategorija() + ";" + 
                     k.getDatumVozacke() + ";" + 
