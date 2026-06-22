@@ -79,6 +79,9 @@ public class Cenovnik {
 	public void setKaznaZaKasnjenje(double kaznaZaKasnjenje) {
 		this.kaznaZaKasnjenje = kaznaZaKasnjenje;
 	}
+	
+	
+	
 	public Map<KategorijaVozila, Double> getCenaNajma() {
 		return cenaNajma;
 	}
@@ -88,6 +91,9 @@ public class Cenovnik {
 	public void setCenaNajma(KategorijaVozila kat, double cena) {
         this.cenaNajma.put(kat, cena);
 	}
+	
+	
+	
 	public Map<DodatnaUsluga, Double> getCenaDodatneUsluge() {
 		return cenaDodatneUsluge;
 	}

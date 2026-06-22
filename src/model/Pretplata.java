@@ -8,12 +8,12 @@ public class Pretplata {
 	private LocalDate datumPocetak;
 	private LocalDate datumKraj;
 	private double cena;
-	public Pretplata(int idPretplate, Klijent klijent, LocalDate datumPocetak, LocalDate datumKraj, double cena) {
+	public Pretplata(int idPretplate, Klijent klijent, LocalDate datumPocetak, double cena) {
 		super();
 		this.idPretplate = idPretplate;
 		this.klijent = klijent;
 		this.datumPocetak = datumPocetak;
-		this.datumKraj = datumKraj;
+		this.datumKraj = datumPocetak.plusYears(1);
 		this.cena = cena;
 	}
 	@Override

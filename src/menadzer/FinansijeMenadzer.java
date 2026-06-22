@@ -6,6 +6,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import enums.*;
 
@@ -62,8 +63,7 @@ public class FinansijeMenadzer {
 	            Pretplata p = new Pretplata(
 	                Integer.parseInt(parts[0]),         // idPretplate
 	                pronadjeniKlijent,                  // prosleđujemo ceo objekat klijenta
-	                LocalDate.parse(parts[2]),          // datumPocetak
-	                LocalDate.parse(parts[3]),          // datumKraj
+	                LocalDate.parse(parts[2]),          // datumPocetak //datumKraja je na 3 mestu
 	                Double.parseDouble(parts[4])        // cena
 	            );
 	            
@@ -167,7 +167,7 @@ public class FinansijeMenadzer {
 	public Cenovnik OdrediTrenutniCenovnik() {
 		LocalDate danas = LocalDate.now();
 		for(Cenovnik c: this.sviCenovnici) {
-			if(c.getDatumKraja().isAfter(danas)) {
+			if(!c.getDatumKraja().isBefore(danas) && !c.getDatumPocetka().isAfter(danas)) {
 				return c;
 			}
 		}
@@ -181,5 +181,109 @@ public class FinansijeMenadzer {
 		}
 		return null;
 	}
+	public void promeniDaneNajma(int daniNajma) {
+		this.trenutniCenovnik.setDaniNajma(daniNajma);
+		sacuvajCenovnike(this.putanjaCenovnika);
+	}
+	public int generisiNoviIdCenovnika() {
+		int max = 0;
+		for(Cenovnik c : this.sviCenovnici) {
+			if(c.getIdCenovnika() > max) {
+				max = c.getIdCenovnika();
+			}
+		}
+		return max + 1;
+	}
+	public int generisiNoviIdPretplate() {
+		int max = 0;
+		for(Pretplata p : this.svePretplate) {
+			if(p.getIdPretplate() > max) {
+				max = p.getIdPretplate();
+			}
+		}
+		return max + 1;
+	}
+	public void dodajSveDodatneUslugeCene(Cenovnik c, RezervacijeMenadzer rezMen) {
+		int koliko = 0;//treba u gui
+		DodatnaUsluga d = new DodatnaUsluga(1, "Produzeni dan");
+		double cenaProduzenogDana =0;//treba u gui
+		c.setCenaDodatneUsluge(d, cenaProduzenogDana);
+		for(int i=0; i<=koliko; i++) {
+			int idDodatneUsluge = rezMen.generisiNoviIdDodatneUsluge();
+			String naziv = "";//treba u gui
+			DodatnaUsluga du = new DodatnaUsluga(idDodatneUsluge, naziv);
+			double cena =0;
+			c.setCenaDodatneUsluge(du, cena);
+		}
+	}
+	public void dodajSveCeneNajma(Cenovnik c) {
+		int koliko = 0;//treba u gui
+		for(KategorijaVozila k: KategorijaVozila.values()) {
+			double cena = 0;//treba u gui
+			c.setCenaNajma(k, cena);
+		}
+	}
+	//treba i proveriti da li su dani vazenja cenovnika slobodni tj da se ne poslepaju s drugim cenovnicima
+	public boolean isDostupniDaniCenovika(LocalDate datumPocetka, LocalDate datumKraja) {//treba pozvati u gui kad bude unosio datume za cenovnik
+		for(Cenovnik c: this.sviCenovnici) {
+			if (c.getDatumPocetka().isBefore(datumKraja) && c.getDatumKraja().isAfter(datumPocetka)) {
+	            return false; // Pronađeno je preklapanje, dani NISU dostupni!
+	        }
+		}
+		return true;
+	}
+	public ArrayList<Pretplata> odrediPrihodeZbogPretplataUPeriodu(LocalDate datumOd, LocalDate datumDo){
+		ArrayList<Pretplata> lista = new ArrayList<>();
+		for(Pretplata p: this.svePretplate) {
+			if(p.getDatumPocetak().isAfter(datumOd)&&p.getDatumPocetak().isBefore(datumDo)) {
+				lista.add(p);
+			}
+		}
+		return lista;
+	}
+	public void napraviCenovnik(LocalDate datumPocetka, LocalDate datumKraja, double cenaGodisnjePretplate, double kaznaZaKasnjenje, double popustZaKategorije, int daniNajma, RezervacijeMenadzer rezMen) {
+		int idCenovnika = generisiNoviIdCenovnika();
+		Cenovnik c = new Cenovnik(idCenovnika, datumPocetka, datumKraja, cenaGodisnjePretplate,
+				kaznaZaKasnjenje,popustZaKategorije,daniNajma);
+		dodajSveDodatneUslugeCene(c, rezMen);
+		dodajSveCeneNajma(c);
+		sacuvajCenovnike(this.putanjaCenovnika);
+	}
+	public void napraviNovuPretplatu(Klijent klijent, OsobaMenadzer osobMen) {
+		if(klijent.getBrojKasnjenja()<=5 && klijent.getZahtev().equals(ZahtevPretplate.ODOBREN)) {
+			int idPretplate = generisiNoviIdPretplate();
+			LocalDate datumPocetak = LocalDate.now();
+			double cena = this.trenutniCenovnik.getCenaGodisnjePretplate();
+			Pretplata p = new Pretplata(idPretplate, klijent, datumPocetak, cena);
+			klijent.setPretplata(p);
+			klijent.setZahtev(ZahtevPretplate.NEMA);
+			osobMen.sacuvajKlijente(osobMen.getPutanjaKlijeti());
+			sacuvajPretplate(this.putanjaPretplate);
+		}
+		else{
+			//ispisi da ne moze u gui
+		}
+	}
+	public void produziPretplatu(Pretplata p, OsobaMenadzer osobMen) {
+		double cena = this.trenutniCenovnik.getCenaGodisnjePretplate();
+		Klijent k = p.getKlijent();
+		if(k.getBrojKasnjenja()<=5 && k.getZahtev().equals(ZahtevPretplate.ODOBREN)) {
+			LocalDate noviKraj = p.getDatumKraj().plusYears(1);
+			p.setDatumKraj(noviKraj);
+			p.setCena(cena);
+			k.setPretplata(p);
+			k.setZahtev(ZahtevPretplate.NEMA);
+			osobMen.sacuvajKlijente(osobMen.getPutanjaKlijeti());
+			sacuvajPretplate(this.putanjaPretplate);
+		}
+		else {
+			//ispisi da ne moze u gui
+		}
+	}
+	public void obrisiCenovnik(int idCenovnika) {
+		this.sviCenovnici.removeIf(c -> c.getIdCenovnika() == idCenovnika);
+		sacuvajCenovnike(this.putanjaCenovnika);
+	}
+	
 
 }

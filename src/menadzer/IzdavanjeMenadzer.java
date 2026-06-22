@@ -139,11 +139,10 @@ public class IzdavanjeMenadzer {
 	}
 	public Vozilo OdaberiVozilo(ArrayList<Vozilo> listaMogucihVozila, Rezervacija rezervacija) {
 		//treba nekako da predlozi sva moguca vozila pa da se unese id vozila i da to bude vozilo
-		for(Vozilo v: listaMogucihVozila) {
-			if(!isVoziloSlobodnoUPeriodu(v, rezervacija.getDatumOd(), rezervacija.getDatumDo())) {
-				listaMogucihVozila.remove(v);
-			}
-		}
+		listaMogucihVozila.removeIf(v -> !isVoziloSlobodnoUPeriodu(v, rezervacija.getDatumOd(), rezervacija.getDatumDo()));
+		if (listaMogucihVozila.isEmpty()) {
+	        return null; // Nema slobodnih vozila
+	    }
 		int idVozila=0;//kasnije s gui ce biti neki pravi id;
 		Vozilo odabrano = listaMogucihVozila.get(idVozila);
 		return odabrano;
@@ -156,20 +155,35 @@ public class IzdavanjeMenadzer {
 //		IzdavanjeVozila idavanjeVozila = new IzdavanjeVozila(idIzdaje,rezervacija,vozilo, null, null,0,0, null);
 //		sacuvajIzdavanja(this.putanjaIzdavanja);
 //	}
-	public void IzdavanjeVozilaPrviDeo(Rezervacija rezervacija, VoziloMenadzer vozMen, OsobaMenadzer osobMen) {
+	public void predloziJosDodatnihUsluga(Rezervacija rezervacija, RezervacijeMenadzer rezMen, FinansijeMenadzer finMen){
+		ArrayList<DodatnaUsluga> listaDodatnih = new ArrayList<>();
+		rezMen.predloziDodatneUsluge(listaDodatnih);
+		for(DodatnaUsluga u: listaDodatnih) {
+			rezervacija.dodajDodatnuUslugu(u);
+			if(u.getNaziv().equals("Produzeni dan")) {
+				LocalDate noviDatumDo = rezervacija.getDatumDo().plusDays(1);
+				rezervacija.setDatumDo(noviDatumDo);
+			}
+		}
+		double osnovnaCena = rezMen.izracunajOsnovnuCenu(rezervacija, finMen);
+		rezervacija.setOsnovnaCena(osnovnaCena);
+	}
+	public void IzdavanjeVozilaPrviDeo(Rezervacija rezervacija, VoziloMenadzer vozMen, OsobaMenadzer osobMen, RezervacijeMenadzer rezMen, FinansijeMenadzer finMen) {
 		ArrayList<Vozilo> listaMogucihVozila = new ArrayList<>();
 		listaMogucihVozila = vozMen.pronadjiVozilaPoModelu(rezervacija.getModelVozila());//zapravo ne trena pronadjiVozilaSlobodnaPrekoModela jer ce mozda vozilo koje nije trnutno DOSTUPSNO biti posle
 		Vozilo odabranoVozilo = OdaberiVozilo(listaMogucihVozila, rezervacija);
 		Osoba trenutnoUlogovan = osobMen.getTrenutnoUlogovan();
 		Agent trenutniAgent = osobMen.pronadjiAgentaPoKorisnickomImenu(trenutnoUlogovan.getKorisnickoIme());
-		if(trenutniAgent.equals(null)) {
+		if(trenutniAgent == null) {
 			//prijavi gresku
 		}
 		int kilometrazaPriPreuzimanju = odabranoVozilo.getTrenutnaKilometraza();
 		int idIzdaje = generisiNoviIdIznajmljivanjeVozila();
+		predloziJosDodatnihUsluga(rezervacija, rezMen,  finMen);
 		IzdavanjeVozila izdaja = new IzdavanjeVozila(idIzdaje,rezervacija, odabranoVozilo, trenutniAgent,null,kilometrazaPriPreuzimanju, 0, null);		
 		odabranoVozilo.setStatus(StatusVozila.IZDATO);
 		vozMen.sacuvajVozila(vozMen.getPutanjaVozila());
+		rezMen.sacuvajRezervacije(rezMen.getPutanjaRezervacije());
 		this.svaIzdavanja.add(izdaja);
 		sacuvajIzdavanja(this.putanjaIzdavanja);
 	}
@@ -183,16 +197,16 @@ public class IzdavanjeMenadzer {
 		}
 		return cenaKazne;
 	}
-	public void IzdavanjeVozilaVracanje(IzdavanjeVozila izdaja, VoziloMenadzer vozMen, OsobaMenadzer osobMen, FinansijeMenadzer finMen) {
+	public void IzdavanjeVozilaVracanje(IzdavanjeVozila izdaja, int novaKilometraza, VoziloMenadzer vozMen, OsobaMenadzer osobMen, FinansijeMenadzer finMen) {
 		Osoba trenutnoUlogovan = osobMen.getTrenutnoUlogovan();
 		Agent trenutniAgent = osobMen.pronadjiAgentaPoKorisnickomImenu(trenutnoUlogovan.getKorisnickoIme());
-		if(trenutniAgent.equals(null)) {
+		if(trenutniAgent == null) {
 			//prijavi gresku
 		}
 		izdaja.setAgentPrimio(trenutniAgent);
 		Vozilo izdatoVozilo = izdaja.getVozilo();
-		int kmPriVracanju = izdatoVozilo.getTrenutnaKilometraza();
-		izdaja.setKilometrazaPriVracanju(kmPriVracanju);
+		izdatoVozilo.setTrenutnaKilometraza(novaKilometraza);
+		izdaja.setKilometrazaPriVracanju(novaKilometraza);
 		LocalDate danas = LocalDate.now();
 		izdaja.setStvarniDatumVracanja(danas);
 		Rezervacija rezervacija = izdaja.getRezervacija();
@@ -212,12 +226,13 @@ public class IzdavanjeMenadzer {
 	public ArrayList<IzdavanjeVozila> ucitajSvaIzdavanjaOdDana(LocalDate datumDana){
 		ArrayList<IzdavanjeVozila> lista = new ArrayList<>();
 		for(IzdavanjeVozila iz: this.svaIzdavanja) {
-			if(iz.getDatumPravljenjaIzdaje().equals(datumDana));
-			lista.add(iz);
+			if(iz.getDatumPravljenjaIzdaje().equals(datumDana)) {
+				lista.add(iz);
+			}
 		}
 		return lista;
 	}
-	public ArrayList<IzdavanjeVozila> odrediPrihodeUPeriodu(LocalDate datumOd, LocalDate datumDo){
+	public ArrayList<IzdavanjeVozila> odrediPrihodeZbogIzdajaUPeriodu(LocalDate datumOd, LocalDate datumDo){
 		ArrayList<IzdavanjeVozila> lista = new ArrayList<>();
 		for(IzdavanjeVozila iz: this.svaIzdavanja) {
 			if(iz.getRezervacija().getDatumOd().isAfter(datumOd)&& iz.getRezervacija().getDatumDo().isBefore(datumDo)) {
@@ -225,5 +240,17 @@ public class IzdavanjeMenadzer {
 			}
 		}
 		return lista;
+	}
+	public void vratiNaDostupnaZbogRezervacijeBezPojave() {
+		for(IzdavanjeVozila iz: this.svaIzdavanja) {
+			if(iz.getRezervacija().getStatus().equals(StatusRezervacije.OTKAZANO)) {
+				iz.getVozilo().setStatus(StatusVozila.DOSTUPNO);
+			}
+		}
+		sacuvajIzdavanja(this.putanjaIzdavanja);
+	}
+	public void obrisiIzdaju(int idIzdaje) {
+		this.svaIzdavanja.removeIf(iz -> iz.getIdIzdaje() == idIzdaje);
+		sacuvajIzdavanja(this.putanjaIzdavanja);
 	}
 }

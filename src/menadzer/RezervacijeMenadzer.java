@@ -16,6 +16,7 @@ import model.DodatnaUsluga;
 import model.IzdavanjeVozila;
 import model.Klijent;
 import model.ModelVozila;
+import model.Osoba;
 import model.Rezervacija;
 import model.Vozilo;
 
@@ -149,39 +150,64 @@ public class RezervacijeMenadzer {
 	}
 	public void potvrdiRezervaciju(Rezervacija r, VoziloMenadzer vozMen, IzdavanjeMenadzer izdMen){
 		boolean imaVozila = izdMen.isModelDostupan(r.getModelVozila(), r.getDatumOd(), r.getDatumDo(), vozMen);
-		if(r.getStatus()==StatusRezervacije.NA_CEKANJU && imaVozila) {
+		if(r.getStatus().equals(StatusRezervacije.NA_CEKANJU) && imaVozila) {
 			r.setStatus(StatusRezervacije.POTVRDJENO);
 		}
 		else {
-			System.out.println("nije na cekanju");
+			//treba da kaze da nije na cekanju
 		}
 		sacuvajRezervacije(this.putanjaRezervacije);
 	}
-	public void otkaziIstekleRezervacije(Rezervacija rezervacija) {
+	public void odbiIstekleRezervacije(Rezervacija rezervacija) {
 		LocalDate danas = LocalDate.now();
 		if(rezervacija.getDatumOd().equals(danas) && rezervacija.getStatus().equals(StatusRezervacije.NA_CEKANJU)) {
+			rezervacija.setStatus(StatusRezervacije.ODBIJENO);
+		}
+		if(rezervacija.getDatumOd().isBefore(danas) && rezervacija.getStatus().equals(StatusRezervacije.NA_CEKANJU)) {
 			rezervacija.setStatus(StatusRezervacije.ODBIJENO);
 		}
 		sacuvajRezervacije(this.putanjaRezervacije);
 	}
 	public void odbiRezervaciju(Rezervacija r){
-		if(r.getStatus()==StatusRezervacije.NA_CEKANJU) {
+		if(r.getStatus().equals(StatusRezervacije.NA_CEKANJU)) {
 			r.setStatus(StatusRezervacije.ODBIJENO);
 		}
 		else {
-			System.out.println("nije na cekanju");
+			//treba da kaze da nije na cekanju
 		}
 		sacuvajRezervacije(this.putanjaRezervacije);
 	}
-	public void otkaziRezervaciju(Rezervacija r, OsobaMenadzer osobMen) {
+	public void otkaziRezervacijuKlijent(Rezervacija r, OsobaMenadzer osobMen) {
+		LocalDate danas = LocalDate.now();
+		if(r.getStatus().equals(StatusRezervacije.NA_CEKANJU) || r.getStatus().equals(StatusRezervacije.POTVRDJENO)) {
+			r.setStatus(StatusRezervacije.OTKAZANO);
+			r.getKlijent().setDatumOtkazivanja(danas);
+		}
+		
+		osobMen.sacuvajKlijente(osobMen.getPutanjaKlijeti());
+		sacuvajRezervacije(this.putanjaRezervacije);
+	}
+	public void otkaziRezervacijuZaposleni(Rezervacija r, OsobaMenadzer osobMen) {
 		r.setStatus(StatusRezervacije.OTKAZANO);
-		//treba dodati da pronadje korisnika po trenutno ulogovanom korisniku pa ko je otkazao i ako je klijent da onda atrbut klijenta otkazao bude true i to nekako na 24h
+		sacuvajRezervacije(this.putanjaRezervacije);
+	}//mozda \gent ne moza da otkaze recervaije
+	
+	public void otkaziRezervacijeBezPojave(OsobaMenadzer osobMen, IzdavanjeMenadzer izdMen) {
+		LocalDate danas = LocalDate.now();
+		for(Rezervacija r: this.sveRezervacije) {
+			if(r.getStatus().equals(StatusRezervacije.POTVRDJENO) && r.getDatumOd().isBefore(danas)) {
+				otkaziRezervacijuKlijent(r,osobMen);
+			}
+		}
 		sacuvajRezervacije(this.putanjaRezervacije);
 	}
 	public boolean isOtkazaoUPoslenjih24h(Klijent klijent) {
 		LocalDate danas = LocalDate.now();
 		LocalDate danas24h = LocalDate.now().minusDays(1);
 		LocalDate datumOtkazivanja = klijent.getDatumOtkazivanja();
+		if (datumOtkazivanja == null) {
+	        return false;
+	    }
 		if(datumOtkazivanja.isAfter(danas24h) && datumOtkazivanja.isBefore(danas)) {
 			return true;
 		}
@@ -205,7 +231,7 @@ public class RezervacijeMenadzer {
 		ArrayList<Vozilo> lista = vozMen.pronadjiVozilaPoModelu(modelVozila);
 		return lista.isEmpty();
 	}
-	private int generisiNoviIdRezervacije() {
+	public int generisiNoviIdRezervacije() {
 		int max = 0;
 		for(Rezervacija r : this.sveRezervacije) {
 			if(r.getIdRezervacije() > max) {
@@ -215,26 +241,36 @@ public class RezervacijeMenadzer {
 		return max + 1;
 	}
 	public double izracunajOsnovnuCenu(Rezervacija r, FinansijeMenadzer finMen) {
-		long brojDana = ChronoUnit.DAYS.between(r.getDatumOd(), r.getDatumDo());
+		//long brojDana = ChronoUnit.DAYS.between(r.getDatumOd(), r.getDatumDo());
 		Cenovnik trenutniCenovnik= finMen.OdrediTrenutniCenovnik();
 		KategorijaVozila kategorija = r.getModelVozila().getKategorijaVozila();
-		double cenaPoDanu = trenutniCenovnik.getCenaNajmaKonkretno(kategorija);
-		double cenaDana = cenaPoDanu*brojDana;
-		double cenaDodatnih = 0;
 		ArrayList<DodatnaUsluga> listaDodatnih = r.getListaDodatnihUsluga();
+		double cenaPoDanuObican = trenutniCenovnik.getCenaNajmaKonkretno(kategorija);
+		int osnovniDani = trenutniCenovnik.getDaniNajma();
+		double cenaDana = cenaPoDanuObican*osnovniDani;
+		double cenaDodatnih = 0;
 		for(DodatnaUsluga u: listaDodatnih) {
 			cenaDodatnih = cenaDodatnih+trenutniCenovnik.getCenaDodatneUslugeKonkretno(u);
 		}
 		double osnovnaCena = cenaDana+cenaDodatnih;
 		return osnovnaCena;
 	}
+	public void predloziDodatneUsluge(ArrayList<DodatnaUsluga> listaDodatnih) {
+		int koliko = 0;//preko gui ce biti neki broj
+		for(DodatnaUsluga u: this.sveDodatneUsluge) {
+			koliko = 0;
+			for(int i =0; i<koliko; i++) {
+				listaDodatnih.add(u);
+			}
+		}
+	}
 	public void napraviRezervaciju( ModelVozila modelVozila, LocalDate datumOd, Klijent klijent, FinansijeMenadzer finMen) {
 		Cenovnik trenutniCenovnik= finMen.OdrediTrenutniCenovnik();
 		int idRezervacije = generisiNoviIdRezervacije();
 		LocalDate datumPravljenja = LocalDate.now();
-		if(klijent.getDatumVozacke().isBefore(LocalDate.now().minusYears(2)) || !isOtkazaoUPoslenjih24h(klijent) ) {
+		if(klijent.getDatumVozacke().isBefore(LocalDate.now().minusYears(2)) && !isOtkazaoUPoslenjih24h(klijent) ) {
 			ArrayList<DodatnaUsluga> listaDodatnih = new ArrayList<>();
-			//treba da ponudi dodatne usluge i doda u listu one koje zeli i doda ih koliko ih hoce npr 3 produzena dana
+			predloziDodatneUsluge(listaDodatnih);
 			LocalDate datumDo = racunanjeDatumaDo(datumOd, listaDodatnih, finMen);
 			Rezervacija rezervacija = new Rezervacija(idRezervacije, modelVozila, datumOd, datumDo, 0,datumPravljenja, klijent);
 			rezervacija.setListaDodatnihUsluga(listaDodatnih);
@@ -263,10 +299,48 @@ public class RezervacijeMenadzer {
 	public ArrayList<Rezervacija> ucitajSveRezervacijeOdDana(LocalDate datumDana){
 		ArrayList<Rezervacija> lista = new ArrayList<>();
 		for(Rezervacija r: this.sveRezervacije) {
-			if(r.getDatumPravljenja().equals(datumDana));
-			lista.add(r);
+			if(r.getDatumPravljenja().equals(datumDana)) {
+				lista.add(r);
+			};
 		}
 		return lista;
+	}
+	public ArrayList<Rezervacija> ucitajSveRezervacijeOdKlijenta(Klijent klijent){
+		ArrayList<Rezervacija> lista = new ArrayList<>();
+		for(Rezervacija r: this.sveRezervacije) {
+			if(r.getKlijent().equals(klijent)) {
+				lista.add(r);
+			}
+		}
+		return lista;
+	}
+	public ArrayList<Rezervacija> ucitajSveSvojeRezervacije(OsobaMenadzer osobMen){
+		Osoba osoba = osobMen.getTrenutnoUlogovan();
+		Klijent k = osobMen.pronadjiKlijentaPoKorisnickomImenu(osoba.getKorisnickoIme());
+		return ucitajSveRezervacijeOdKlijenta(k);
+	}
+	public int generisiNoviIdDodatneUsluge() {
+		int max = 0;
+		for(DodatnaUsluga r : this.sveDodatneUsluge) {
+			if(r.getIdDodatneUsluge() > max) {
+				max = r.getIdDodatneUsluge();
+			}
+		}
+		return max + 1;
+	}
+	public void dodajNovuDodatnuUslugu(String naziv) {
+		int idDodatneUsluge = generisiNoviIdDodatneUsluge();
+		DodatnaUsluga u = new  DodatnaUsluga(idDodatneUsluge, naziv);
+		this.sveDodatneUsluge.add(u);
+		sacuvajDodatneUsluge(this.putanjaDodatneUsluge);
+	}
+	public void obrisiDodadnuUslugu(int idUsluge) {
+		this.sveDodatneUsluge.removeIf(v -> v.getIdDodatneUsluge() == idUsluge);
+		sacuvajDodatneUsluge(this.putanjaDodatneUsluge);
+	}
+	public void obrisiRezervaciju(int idRezervacije) {
+		this.sveRezervacije.removeIf(v -> v.getIdRezervacije() == idRezervacije);
+		sacuvajRezervacije(this.putanjaRezervacije);
 	}
 	
 

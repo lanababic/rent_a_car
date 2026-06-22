@@ -145,7 +145,7 @@ public class VoziloMenadzer {
 		ArrayList<Vozilo> lista = new ArrayList<>();
 		ArrayList<Vozilo> listaSlobodnih = pronadjiVozilaSlobodnaTrenutno();
 		for(Vozilo v: listaSlobodnih) {
-			if(v.getModelVozila().equals(modelVozila)) {
+			if(v.getModelVozila().getId() == modelVozila.getId()) {
 				lista.add(v);
 			}
 		}
@@ -158,6 +158,48 @@ public class VoziloMenadzer {
 
 	public String getPutanjaModeliVozila() {
 		return putanjaModeliVozila;
+	}
+	public int generisiNoviIdModelaVozila() {
+		int max = 0;
+		for(ModelVozila c : this.sviModeliVozila) {
+			if(c.getId() > max) {
+				max = c.getId();
+			}
+		}
+		return max + 1;
+	}
+	public int generisiNoviIdVozila() {
+		int max = 0;
+		for(Vozilo c : this.svaVozila) {
+			if(c.getIdVozila() > max) {
+				max = c.getIdVozila();
+			}
+		}
+		return max + 1;
+	}
+	public void dodajNoviModelVozila(KategorijaVozila kategorijaVozila,String naziv, String proizvodjac) {
+		int idModela = generisiNoviIdModelaVozila();
+		ModelVozila m = new ModelVozila(idModela, kategorijaVozila, naziv, proizvodjac);
+		this.sviModeliVozila.add(m);
+		sacuvajModeleVozila(this.putanjaModeliVozila);
+	}
+	public void dodajNovoVozilo(ModelVozila modelVozila, String registracijaVozila, int trenutnaKilometraza,
+			 StatusVozila status) {
+		int idVozila = generisiNoviIdVozila();
+		Vozilo v = new Vozilo(idVozila,modelVozila, registracijaVozila, trenutnaKilometraza,status);
+		this.svaVozila.add(v);
+		sacuvajVozila(this.putanjaVozila);
+	}
+	public void obrisiModelVozila(int idModela) {
+		this.sviModeliVozila.removeIf(m -> m.getId() == idModela);
+	    this.svaVozila.removeIf(v -> v.getModelVozila().getId() == idModela);
+		sacuvajModeleVozila(this.putanjaModeliVozila);
+		sacuvajVozila(this.putanjaVozila);
+		
+	}
+	public void obrisiVozilo(int idVozila) {
+		this.svaVozila.removeIf(v -> v.getIdVozila() == idVozila);
+		sacuvajVozila(this.putanjaVozila);
 	}
 	
 	

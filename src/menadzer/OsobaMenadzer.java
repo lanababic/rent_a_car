@@ -1,14 +1,25 @@
 package menadzer;
 
-import model.*;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
-import enums.*;
+import enums.KategorijaKlijenta;
+import enums.Pol;
+import enums.StrucnaSprema;
+import enums.ZahtevPretplate;
+import model.Admin;
+import model.Agent;
+import model.Klijent;
+import model.Osoba;
+import model.Pretplata;
+import model.Zaposleni;
 
 public class OsobaMenadzer {
 	private ArrayList<Klijent> sviKlijenti;
@@ -18,19 +29,16 @@ public class OsobaMenadzer {
 	private final String putanjaAgenti = "podaci/agenti.csv";
 	private final String putanjaAdmini = "podaci/admini.csv";
 	private Osoba trenutnoUlogovan;
-	private ArrayList<String> svaKorisnickaImena;
 	
 	public OsobaMenadzer(FinansijeMenadzer finMen) {
 		this.sviKlijenti = new ArrayList<>();
 		this.sviAgenti = new ArrayList<>();
 		this.sviAdmini = new ArrayList<>();
-		this.svaKorisnickaImena = new ArrayList<>();
 		this.trenutnoUlogovan=null;
 		
 		ucitajKlijente(this.putanjaKlijeti, finMen);
 		ucitajAgente(this.putanjaAgenti);
 		ucitajAdmine(this.putanjaAdmini);
-		ucitajSvaKorisnickaImena();
 	}
 	
 	public String getPutanjaKlijeti() {
@@ -60,7 +68,8 @@ public class OsobaMenadzer {
 						parts[6],								//lozinka
 						KategorijaKlijenta.valueOf(parts[7]),	//kategirjaKlijenta
 						LocalDate.parse(parts[8]),				//datumVozacke
-						Integer.parseInt(parts[9]));			//brojKasnjenja
+						Integer.parseInt(parts[9])				//brojKasnjenja
+				);			
 				LocalDate datumOtkazivanja = null;
 	            if (!parts[10].equals("null")) {
 	                datumOtkazivanja = LocalDate.parse(parts[10]);
@@ -72,6 +81,8 @@ public class OsobaMenadzer {
 	                pretplata = finMen.PronadjiPretplatuPoId(idPretplate);
 	            }
 	            k.setPretplata(pretplata);
+	            ZahtevPretplate zahtev = ZahtevPretplate.valueOf(parts[12]);
+	            k.setZahtev(zahtev);
 				this.sviKlijenti.add(k);
 			}
 		}
@@ -134,6 +145,7 @@ public class OsobaMenadzer {
 	public void sacuvajKlijente(String putanjaKlijeti) {
 		ArrayList<String> lines = new ArrayList<String>();
 		for(Klijent k: this.sviKlijenti) {
+			String idPretplateS = (k.getPretplata() != null) ? String.valueOf(k.getPretplata().getIdPretplate()) : "null";
 			String line = k.getIme() + ";" + 
                     k.getPrezime() + ";" + 
                     k.getPol() + ";" + 
@@ -145,7 +157,8 @@ public class OsobaMenadzer {
                     k.getDatumVozacke() + ";" + 
                     k.getBrojKasnjenja()+ ";" + 
                     k.getDatumOtkazivanja()+ ";" + 
-                    k.getPretplata().getIdPretplate();
+                    idPretplateS+ ";" +
+                    k.getZahtev();
 			lines.add(line);
 		}
 		try {
@@ -167,8 +180,7 @@ public class OsobaMenadzer {
 	                      a.getLozinka() + ";" + 
 	                      a.getSprema() + ";" + 
 	                      a.getStaz() + ";" + 
-	                      a.getOsnovnaPlata() + ";" + 
-	                      a.getBrojUspesnihProdaja();
+	                      a.getOsnovnaPlata();
 	        lines.add(line);
 	    }
 	    try {
@@ -199,33 +211,24 @@ public class OsobaMenadzer {
 	        e.printStackTrace();
 	    }
 	}
-	public void ucitajSvaKorisnickaImena() {
-		for(Admin ad: this.sviAdmini) {
-			String korIme = ad.getKorisnickoIme();
-			this.svaKorisnickaImena.add(korIme);
-		}
-		for(Agent ad: this.sviAgenti) {
-			String korIme = ad.getKorisnickoIme();
-			this.svaKorisnickaImena.add(korIme);
-		}
-		for(Klijent ad: this.sviKlijenti) {
-			String korIme = ad.getKorisnickoIme();
-			this.svaKorisnickaImena.add(korIme);
-		}
-		
+	public boolean korisnickoImePostoji(String korIme) {
+	    for(Admin a : sviAdmini) if(a.getKorisnickoIme().equals(korIme)) return true;
+	    for(Agent a : sviAgenti) if(a.getKorisnickoIme().equals(korIme)) return true;
+	    for(Klijent k : sviKlijenti) if(k.getKorisnickoIme().equals(korIme)) return true; // ili email za klijenta
+	    return false;
 	}
 	public void logIn(String korisnickoIme, String lozinka) {
 		for(Admin ad: this.sviAdmini ) {
 			String korIme = ad.getKorisnickoIme();
 			String loz = ad.getLozinka();
-			if(korIme.equals(korisnickoIme) && loz.endsWith(lozinka)) {
+			if(korIme.equals(korisnickoIme) && loz.equals(lozinka)) {
 				this.trenutnoUlogovan=ad;
 			}
 		}
 		for(Agent ad: this.sviAgenti) {
 			String korIme = ad.getKorisnickoIme();
 			String loz = ad.getLozinka();
-			if(korIme.equals(korisnickoIme) && loz.endsWith(lozinka)) {
+			if(korIme.equals(korisnickoIme) && loz.equals(lozinka)) {
 				this.trenutnoUlogovan=ad;
 			}
 		}
@@ -233,7 +236,7 @@ public class OsobaMenadzer {
 			String korIme = ad.getKorisnickoIme();
 			String loz = ad.getLozinka();
 			String email = ad.getEmail();
-			if((korIme.equals(korisnickoIme) || korIme.equals(email)) && loz.endsWith(lozinka)) {
+			if((korIme.equals(korisnickoIme) || korIme.equals(email)) && loz.equals(lozinka)) {
 				this.trenutnoUlogovan=ad;
 			}
 		}
@@ -243,7 +246,7 @@ public class OsobaMenadzer {
 	}
 	public void registrujAgenta(String ime, String prezime, Pol pol, LocalDate datumRodj, String telefon, String adresa,
 			String korisnickoIme, String lozinka, StrucnaSprema sprema, int staz) {
-		if(!this.svaKorisnickaImena.contains(korisnickoIme)) {
+		if(!korisnickoImePostoji(korisnickoIme)) {
 			Agent novi = new Agent(ime, prezime,pol, datumRodj,telefon, adresa,korisnickoIme, lozinka, sprema, staz, 0);
 			double osnovnaPlata = izracunajPlatu(novi);
 			novi.setOsnovnaPlata(osnovnaPlata);
@@ -253,7 +256,7 @@ public class OsobaMenadzer {
 	}
 	public void registrujAdmina(String ime, String prezime, Pol pol, LocalDate datumRodj, String telefon, String adresa,
 			String korisnickoIme, String lozinka, StrucnaSprema sprema, int staz) {
-		if(!this.svaKorisnickaImena.contains(korisnickoIme)) {
+		if(!korisnickoImePostoji(korisnickoIme)) {
 			Admin novi = new Admin(ime, prezime, pol,  datumRodj, telefon, adresa,korisnickoIme, lozinka,  sprema, staz, 0);
 			double osnovnaPlata = izracunajPlatu(novi);
 			novi.setOsnovnaPlata(osnovnaPlata);
@@ -269,7 +272,7 @@ public class OsobaMenadzer {
 	public void registrujNovogKlijenta(String ime, String prezime, Pol pol, LocalDate datumRodj, String telefon, String email,
 			 String lozinka, KategorijaKlijenta kategorija, LocalDate datumVozacke,
 			int brojKasnjenja) {
-		if(!this.svaKorisnickaImena.contains(email)) {
+		if(!korisnickoImePostoji(email)) {
 			Klijent novi = new Klijent(ime, prezime,pol, datumRodj, telefon, email,lozinka, kategorija,datumVozacke, brojKasnjenja);
 			sviKlijenti.add(novi);
 			sacuvajKlijente(this.putanjaKlijeti);
@@ -303,17 +306,59 @@ public class OsobaMenadzer {
 	public Osoba getTrenutnoUlogovan() {
 		return trenutnoUlogovan;
 	}
-	public ArrayList<Zaposleni> odrediRashodeUPeriodu(LocalDate datumOd, LocalDate datumDo){
-		ArrayList<Zaposleni> lista = new ArrayList<>();
+	public Map<String, Double> odrediRashodeUPeriodu(LocalDate datumOd, LocalDate datumDo){
+		Map<String, Double> rashodi = new HashMap<>();
+		long brojDana = ChronoUnit.DAYS.between(datumOd, datumDo);
+		double brojMeseci = brojDana/30;
+		int brojMeseciInt = (int) brojMeseci;
 		for(Admin ad: this.sviAdmini) {	
 			String korIme = ad.getKorisnickoIme();
-			lista.add(ad);
+			Double plata = ad.getOsnovnaPlata()*brojMeseciInt;
+			rashodi.put(korIme, plata);
 		}
 		for(Agent ad: this.sviAgenti) {
 			String korIme = ad.getKorisnickoIme();
-			lista.add(ad);
+			Double plata = ad.getOsnovnaPlata()*brojMeseciInt;
+			rashodi.put(korIme, plata);
 		}
-		return lista;
+		return rashodi;
+	}
+	public void podnesiZahtev() {
+		Klijent k = pronadjiKlijentaPoKorisnickomImenu(this.trenutnoUlogovan.getKorisnickoIme());
+		if (k.getBrojKasnjenja() > 5) {
+	        k.setZahtev(ZahtevPretplate.ODBIJEN); // Automatski se odbija 
+	    } else {
+	        k.setZahtev(ZahtevPretplate.POSLAT);
+	    }
+	    sacuvajKlijente(this.putanjaKlijeti);
+	}
+	public void odobriZahtev(Klijent k) {
+		k.setZahtev(ZahtevPretplate.ODOBREN);
+		sacuvajKlijente(this.putanjaKlijeti);
+	}
+	public void odbiZahtev(Klijent k) {
+		k.setZahtev(ZahtevPretplate.ODBIJEN);
+		sacuvajKlijente(this.putanjaKlijeti);
+	}
+	public void odbiSveStoKasne() {
+		for(Klijent k: this.sviKlijenti) {
+			if(k.getBrojKasnjenja()>5) {
+				odbiZahtev(k);
+			}
+		}
+		sacuvajKlijente(this.putanjaKlijeti);
+	}
+	public void obrisiAdmina(String korisnickoIme) {
+		this.sviAdmini.removeIf(ad -> ad.getKorisnickoIme().equals(korisnickoIme));
+		sacuvajAdmine(this.putanjaAdmini);
+	}
+	public void obrisiAgenta(String korisnickoIme) {
+		this.sviAgenti.removeIf(ad -> ad.getKorisnickoIme().equals(korisnickoIme));
+		sacuvajAgente(this.putanjaAgenti);
+	}
+	public void obrisiKlijenta(String korisnickoIme) {
+		this.sviKlijenti.removeIf(ad -> ad.getKorisnickoIme().equals(korisnickoIme));
+		sacuvajKlijente(this.putanjaKlijeti);
 	}
 	
 }
