@@ -40,7 +40,7 @@ public class Zaposleni extends Osoba {
 		return osnovnaPlata;
 	}
 
-	public void setOsnovnaPlata(int osnovnaPlata) {
+	public void setOsnovnaPlata(double osnovnaPlata) {
 		this.osnovnaPlata = osnovnaPlata;
 	}
 	

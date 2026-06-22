@@ -11,18 +11,43 @@ public class Cenovnik {
 	private LocalDate datumKraja;
 	private double cenaGodisnjePretplate;
 	private double kaznaZaKasnjenje;
+	private double popustZaKategorije;
+	private int daniNajma;
 	private Map<KategorijaVozila, Double> cenaNajma;
 	private Map<DodatnaUsluga, Double> cenaDodatneUsluge;
 	public Cenovnik(int idCenovnika, LocalDate datumPocetka, LocalDate datumKraja, double cenaGodisnjePretplate,
-			double kaznaZaKasnjenje) {
+			double kaznaZaKasnjenje, double popustZaKategorije, int daniNajma) {
 		super();
 		this.idCenovnika = idCenovnika;
 		this.datumPocetka = datumPocetka;
 		this.datumKraja = datumKraja;
 		this.cenaGodisnjePretplate = cenaGodisnjePretplate;
 		this.kaznaZaKasnjenje = kaznaZaKasnjenje;
+		this.popustZaKategorije= popustZaKategorije;
+		this.daniNajma= daniNajma;
 		this.cenaDodatneUsluge = new HashMap<>();
 		this.cenaNajma = new HashMap<>();
+	}
+	
+	@Override
+	public String toString() {
+		return "Cenovnik [idCenovnika=" + idCenovnika + ", datumPocetka=" + datumPocetka + ", datumKraja=" + datumKraja
+				+ ", cenaGodisnjePretplate=" + cenaGodisnjePretplate + ", kaznaZaKasnjenje=" + kaznaZaKasnjenje
+				+ ", popustZaKategorije=" + popustZaKategorije + ", daniNajma=" + daniNajma + ", cenaNajma=" + cenaNajma
+				+ ", cenaDodatneUsluge=" + cenaDodatneUsluge + "]";
+	}
+
+	public int getDaniNajma() {
+		return daniNajma;
+	}
+	public void setDaniNajma(int daniNajma) {
+		this.daniNajma = daniNajma;
+	}
+	public double getPopustZaKategorije() {
+		return popustZaKategorije;
+	}
+	public void setPopustZaKategorije(double popustZaKategorije) {
+		this.popustZaKategorije = popustZaKategorije;
 	}
 	public int getIdCenovnika() {
 		return idCenovnika;

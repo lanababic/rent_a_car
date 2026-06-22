@@ -7,24 +7,23 @@ public class Vozilo {
 	private ModelVozila modelVozila;
 	private String registracijaVozila;
 	private int trenutnaKilometraza;
-	private KategorijaVozila kategorijaVozila;
-	private StatusRezervacije status;
+	private StatusVozila status;
 	public Vozilo(int idVozila, ModelVozila modelVozila, String registracijaVozila, int trenutnaKilometraza,
-			KategorijaVozila kategorijaVozila, StatusRezervacije status) {
+			 StatusVozila status) {
 		super();
 		this.idVozila = idVozila;
 		this.modelVozila = modelVozila;
 		this.registracijaVozila = registracijaVozila;
 		this.trenutnaKilometraza = trenutnaKilometraza;
-		this.kategorijaVozila = kategorijaVozila;
 		this.status = status;
 	}
+	
 	@Override
 	public String toString() {
 		return "Vozilo [idVozila=" + idVozila + ", modelVozila=" + modelVozila + ", registracijaVozila="
-				+ registracijaVozila + ", trenutnaKilometraza=" + trenutnaKilometraza + ", kategorijaVozila="
-				+ kategorijaVozila + ", status=" + status + "]";
+				+ registracijaVozila + ", trenutnaKilometraza=" + trenutnaKilometraza + ", status=" + status + "]";
 	}
+
 	public int getIdVozila() {
 		return idVozila;
 	}
@@ -49,18 +48,11 @@ public class Vozilo {
 	public void setTrenutnaKilometraza(int trenutnaKilometraza) {
 		this.trenutnaKilometraza = trenutnaKilometraza;
 	}
-	public KategorijaVozila getKategorijaVozila() {
-		return kategorijaVozila;
-	}
-	public void setKategorijaVozila(KategorijaVozila kategorijaVozila) {
-		this.kategorijaVozila = kategorijaVozila;
-	}
-	public StatusRezervacije getStatus() {
+	public StatusVozila getStatus() {
 		return status;
 	}
-	public void setStatus(StatusRezervacije status) {
+	public void setStatus(StatusVozila status) {
 		this.status = status;
 	}
 	
-
 }

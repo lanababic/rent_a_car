@@ -14,6 +14,7 @@ public class FinansijeMenadzer {
 	private ArrayList<Cenovnik> sviCenovnici;
 	private final String putanjaPretplate = "podaci/pretplate.csv";
 	private final String putanjaCenovnika = "podaci/cenovnici.csv";
+	private Cenovnik trenutniCenovnik;
 	
 	public FinansijeMenadzer(OsobaMenadzer osobaMen, RezervacijeMenadzer rezMen) {
 		this.svePretplate = new ArrayList<>();
@@ -21,8 +22,17 @@ public class FinansijeMenadzer {
 		
 		ucitajPretplate(this.putanjaPretplate, osobaMen);
 		ucitajCenovnike(this.putanjaCenovnika, rezMen);
+		this.trenutniCenovnik=OdrediTrenutniCenovnik();
 	}
 	
+	public String getPutanjaPretplate() {
+		return putanjaPretplate;
+	}
+
+	public String getPutanjaCenovnika() {
+		return putanjaCenovnika;
+	}
+
 	public void sacuvajPretplate(String putanjaPretplate) {
 	    ArrayList<String> lines = new ArrayList<String>();
 	    for (Pretplata p : this.svePretplate) {
@@ -71,7 +81,9 @@ public class FinansijeMenadzer {
 	                      c.getDatumPocetka() + ";" + 
 	                      c.getDatumKraja() + ";" + 
 	                      c.getCenaGodisnjePretplate() + ";" + 
-	                      c.getKaznaZaKasnjenje();
+	                      c.getKaznaZaKasnjenje()+ ";" + 
+	                      c.getPopustZaKategorije()+ ";" + 
+	                      c.getDaniNajma();
 	        
 	        // 1. Pakovanje mape cenaNajma (Ključ je Enum KategorijaVozila)
 	        String dodatakNajam = "";
@@ -113,12 +125,14 @@ public class FinansijeMenadzer {
 	                LocalDate.parse(parts[1]),              // datumPocetka
 	                LocalDate.parse(parts[2]),              // datumKraja
 	                Double.parseDouble(parts[3]),           // cenaGodisnjePretplate
-	                Double.parseDouble(parts[4])            // kaznaZaKasnjenje
+	                Double.parseDouble(parts[4]),            // kaznaZaKasnjenje
+	                Double.parseDouble(parts[5]),            // popustZaKategorije
+	                Integer.parseInt(parts[6])             // daniNajma
 	            );
 	            
 	            // 1. Rekonstrukcija mape cenaNajma (parts[5]) -> KategorijaVozila (Enum)
-	            if (parts.length > 5 && !parts[5].trim().isEmpty()) {
-	                String[] paroviNajma = parts[5].split(",");
+	            if (parts.length > 7 && !parts[7].trim().isEmpty()) {
+	                String[] paroviNajma = parts[7].split(",");
 	                for (String par : paroviNajma) {
 	                    String[] kljucIValue = par.split(":");
 	                    KategorijaVozila kat = KategorijaVozila.valueOf(kljucIValue[0].trim());
@@ -128,8 +142,8 @@ public class FinansijeMenadzer {
 	            }
 	            
 	            // 2. Rekonstrukcija mape cenaDodatneUsluge (parts[6]) -> Objekat DodatnaUsluga
-	            if (parts.length > 6 && !parts[6].trim().isEmpty()) {
-	                String[] paroviUsluga = parts[6].split(",");
+	            if (parts.length > 8 && !parts[8].trim().isEmpty()) {
+	                String[] paroviUsluga = parts[8].split(",");
 	                for (String par : paroviUsluga) {
 	                    String[] kljucIValue = par.split(":");
 	                    int idUsluge = Integer.parseInt(kljucIValue[0].trim());
@@ -149,6 +163,23 @@ public class FinansijeMenadzer {
 	    } catch (IOException e) {
 	        e.printStackTrace();
 	    }
+	}
+	public Cenovnik OdrediTrenutniCenovnik() {
+		LocalDate danas = LocalDate.now();
+		for(Cenovnik c: this.sviCenovnici) {
+			if(c.getDatumKraja().isAfter(danas)) {
+				return c;
+			}
+		}
+		return null;
+	}
+	public Pretplata PronadjiPretplatuPoId(int idPretplate) {
+		for(Pretplata p: this.svePretplate) {
+			if(p.getIdPretplate()==idPretplate) {
+				return p;
+			}
+		}
+		return null;
 	}
 
 }

@@ -12,6 +12,8 @@ public class IzdavanjeVozila {
 	private int kilometrazaPriVracanju;
 	private LocalDate stvarniDatumVracanja;
 	private double naplacenaKazna;
+	private double ukupnaCena;
+	private LocalDate datumPravljenjaIzdaje;
 	public IzdavanjeVozila(int idIzdaje, Rezervacija rezervacija, Vozilo vozilo, Agent agentIzdao, Agent agentPrimio,
 			int kilometrazaPriPreuzimanju, int kilometrazaPriVracanju, LocalDate stvarniDatumVracanja) {
 		super();
@@ -24,14 +26,35 @@ public class IzdavanjeVozila {
 		this.kilometrazaPriVracanju = kilometrazaPriVracanju;
 		this.stvarniDatumVracanja = stvarniDatumVracanja;
 		this.naplacenaKazna = 0.0;
+		this.ukupnaCena = (rezervacija != null) ? rezervacija.getOsnovnaCena() : 0.0;
+		this.datumPravljenjaIzdaje = LocalDate.now();
 	}
+	
+	public LocalDate getDatumPravljenjaIzdaje() {
+		return datumPravljenjaIzdaje;
+	}
+
+	public void setDatumPravljenjaIzdaje(LocalDate datumPravljenjaIzdaje) {
+		this.datumPravljenjaIzdaje = datumPravljenjaIzdaje;
+	}
+
+	public double getUkupnaCena() {
+		return ukupnaCena;
+	}
+
+	public void setUkupnaCena(double ukupnaCena) {
+		this.ukupnaCena = ukupnaCena;
+	}
+	
 	@Override
 	public String toString() {
 		return "IzdavanjeVozila [idIzdaje=" + idIzdaje + ", rezervacija=" + rezervacija + ", vozilo=" + vozilo
 				+ ", agentIzdao=" + agentIzdao + ", agentPrimio=" + agentPrimio + ", kilometrazaPriPreuzimanju="
 				+ kilometrazaPriPreuzimanju + ", kilometrazaPriVracanju=" + kilometrazaPriVracanju
-				+ ", stvarniDatumVracanja=" + stvarniDatumVracanja + ", naplacenaKazna=" + naplacenaKazna + "]";
+				+ ", stvarniDatumVracanja=" + stvarniDatumVracanja + ", naplacenaKazna=" + naplacenaKazna
+				+ ", ukupnaCena=" + ukupnaCena + ", datumPravljenjaIzdaje=" + datumPravljenjaIzdaje + "]";
 	}
+
 	public int getIdIzdaje() {
 		return idIzdaje;
 	}

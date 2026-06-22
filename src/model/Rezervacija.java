@@ -9,11 +9,12 @@ public class Rezervacija {
 	private LocalDate datumOd;
 	private LocalDate datumDo;
 	private StatusRezervacije status;
-	private int osnovnaCena;
+	private double osnovnaCena;
 	private ArrayList<DodatnaUsluga> listaDodatnihUsluga;
 	private LocalDate datumPravljenja;
+	private Klijent klijent;
 	public Rezervacija(int idRezervacije, ModelVozila modelVozila, LocalDate datumOd, LocalDate datumDo,
-			 int osnovnaCena, LocalDate datumPravljenja) {
+			 double osnovnaCena, LocalDate datumPravljenja, Klijent klijent) {
 		super();
 		this.idRezervacije = idRezervacije;
 		this.modelVozila = modelVozila;
@@ -23,12 +24,25 @@ public class Rezervacija {
 		this.osnovnaCena = osnovnaCena;
 		this.listaDodatnihUsluga = new ArrayList<DodatnaUsluga>();
 		this.datumPravljenja = datumPravljenja;
+		this.klijent=klijent;
 	}
+	
+	public Klijent getKlijent() {
+		return klijent;
+	}
+
+	public void setKlijent(Klijent klijent) {
+		this.klijent = klijent;
+	}
+
 	@Override
 	public String toString() {
 		return "Rezervacija [idRezervacije=" + idRezervacije + ", modelVozila=" + modelVozila + ", datumOd=" + datumOd
-				+ ", datumDo=" + datumDo + ", status=" + status + ", osnovnaCena=" + osnovnaCena + "]";
+				+ ", datumDo=" + datumDo + ", status=" + status + ", osnovnaCena=" + osnovnaCena
+				+ ", listaDodatnihUsluga=" + listaDodatnihUsluga + ", datumPravljenja=" + datumPravljenja + ", klijent="
+				+ klijent + "]";
 	}
+
 	public int getIdRezervacije() {
 		return idRezervacije;
 	}
@@ -59,15 +73,19 @@ public class Rezervacija {
 	public void setStatus(StatusRezervacije status) {
 		this.status = status;
 	}
-	public int getOsnovnaCena() {
+	public double getOsnovnaCena() {
 		return osnovnaCena;
 	}
-	public void setOsnovnaCena(int osnovnaCena) {
+	public void setOsnovnaCena(double osnovnaCena) {
 		this.osnovnaCena = osnovnaCena;
 	}
 	public ArrayList<DodatnaUsluga> getListaDodatnihUsluga() {
 		return listaDodatnihUsluga;
 	}
+	public void setListaDodatnihUsluga(ArrayList<DodatnaUsluga> listaDodatnihUsluga) {
+		this.listaDodatnihUsluga = listaDodatnihUsluga;
+	}
+
 	public void dodajDodatnuUslugu(DodatnaUsluga usluga) {
         this.listaDodatnihUsluga.add(usluga);
     }
@@ -77,4 +95,5 @@ public class Rezervacija {
 	public void setDatumPravljenja(LocalDate datumPravljenja) {
 		this.datumPravljenja = datumPravljenja;
 	}
+	
 }

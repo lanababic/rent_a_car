@@ -65,7 +65,6 @@ public class VoziloMenadzer {
 	                      v.getModelVozila().getId() + ";" + 
 	                      v.getRegistracijaVozila() + ";" + 
 	                      v.getTrenutnaKilometraza() + ";" + 
-	                      v.getKategorijaVozila() + ";" + 
 	                      v.getStatus();
 	        lines.add(line);
 	    }
@@ -90,8 +89,7 @@ public class VoziloMenadzer {
 	                pronadjeniModel,                        // prosleđujemo ceo objekat modela
 	                parts[2],                               // registracijaVozila
 	                Integer.parseInt(parts[3]),             // trenutnaKilometraza
-	                KategorijaVozila.valueOf(parts[4]),     // kategorijaVozila (enum)
-	                StatusRezervacije.valueOf(parts[5])     // status (enum)
+	                StatusVozila.valueOf(parts[4])     		// status (enum)
 	            );
 	            
 	            this.svaVozila.add(v);
@@ -116,5 +114,52 @@ public class VoziloMenadzer {
 	    }
 	    return null; 
 	}
+	public ArrayList<Vozilo> pronadjiVozilaPoModelu(ModelVozila modelVozila){
+		ArrayList<Vozilo> lista = new ArrayList<>();
+		for(Vozilo v: this.svaVozila) {
+			if(v.getModelVozila().getId()==(modelVozila.getId())) {
+				lista.add(v);
+			}
+		}
+		return lista;
+	}
+	public ArrayList<Vozilo> pronadjiVozilaSlobodnaTrenutno(){
+		ArrayList<Vozilo> lista = new ArrayList<>();
+		for(Vozilo v: this.svaVozila) {
+			if(v.getStatus().equals(StatusVozila.DOSTUPNO)) {
+				lista.add(v);
+			}
+		}
+		return lista;
+	}
+	public ArrayList<Vozilo> pronadjiVozilaZauzetaTrenutno(){
+		ArrayList<Vozilo> lista = new ArrayList<>();
+		for(Vozilo v: this.svaVozila) {
+			if(v.getStatus().equals(StatusVozila.IZDATO)) {
+				lista.add(v);
+			}
+		}
+		return lista;
+	}
+	public ArrayList<Vozilo> pronadjiVozilaSlobodnaTrenutnoPrekoModela(ModelVozila modelVozila){
+		ArrayList<Vozilo> lista = new ArrayList<>();
+		ArrayList<Vozilo> listaSlobodnih = pronadjiVozilaSlobodnaTrenutno();
+		for(Vozilo v: listaSlobodnih) {
+			if(v.getModelVozila().equals(modelVozila)) {
+				lista.add(v);
+			}
+		}
+		return lista;
+	}
+
+	public String getPutanjaVozila() {
+		return putanjaVozila;
+	}
+
+	public String getPutanjaModeliVozila() {
+		return putanjaModeliVozila;
+	}
+	
+	
 
 }
