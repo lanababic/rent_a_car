@@ -360,5 +360,51 @@ public class OsobaMenadzer {
 		this.sviKlijenti.removeIf(ad -> ad.getKorisnickoIme().equals(korisnickoIme));
 		sacuvajKlijente(this.putanjaKlijeti);
 	}
+	public void izmeniAgenta(Agent agent, String ime, String prezime, Pol pol, LocalDate datumRodj, String telefon, String email,
+			String korisnickoIme, String lozinka, StrucnaSprema sprema, int staz, double osnovnaPlata) {
+		if (ime != null) { agent.setIme(ime); }
+	    if (prezime != null) { agent.setPrezime(prezime); }
+	    if (pol != null) { agent.setPol(pol); }
+	    if (datumRodj != null) { agent.setDatumRodj(datumRodj); }
+	    if (telefon != null) { agent.setTelefon(telefon); }
+	    if (email != null) { agent.setEmail(email); }
+	    if (korisnickoIme != null && !korisnickoImePostoji(korisnickoIme)) { agent.setKorisnickoIme(korisnickoIme); }
+	    if (lozinka != null) { agent.setLozinka(lozinka); }
+	    if (sprema != null) { agent.setSprema(sprema); }
+	    if( staz>=0) {agent.setStaz(staz);}
+	    agent.setOsnovnaPlata(izracunajPlatu(agent));
+	    sacuvajAgente(this.putanjaAgenti);
+	}
+	public void izmeniAdmina(Admin agent, String ime, String prezime, Pol pol, LocalDate datumRodj, String telefon, String email,
+			String korisnickoIme, String lozinka, StrucnaSprema sprema, int staz, double osnovnaPlata) {
+		if (ime != null) { agent.setIme(ime); }
+	    if (prezime != null) { agent.setPrezime(prezime); }
+	    if (pol != null) { agent.setPol(pol); }
+	    if (datumRodj != null) { agent.setDatumRodj(datumRodj); }
+	    if (telefon != null) { agent.setTelefon(telefon); }
+	    if (email != null) { agent.setEmail(email); }
+	    if (korisnickoIme != null && !korisnickoImePostoji(korisnickoIme)) { agent.setKorisnickoIme(korisnickoIme); }
+	    if (lozinka != null) { agent.setLozinka(lozinka); }
+	    if (sprema != null) { agent.setSprema(sprema); }
+	    if( staz>=0) {agent.setStaz(staz);}
+	    agent.setOsnovnaPlata(izracunajPlatu(agent));
+	    sacuvajAdmine(this.putanjaAdmini);
+	}
+	public void izmeniKlijenta(Klijent klijent, String ime, String prezime, Pol pol, LocalDate datumRodj, String telefon, String email,
+			 String lozinka, KategorijaKlijenta kategorija, LocalDate datumVozacke, int brojKasnjenja, Pretplata pretplata, ZahtevPretplate zahtev) {
+		if (ime != null) { klijent.setIme(ime); }
+	    if (prezime != null) { klijent.setPrezime(prezime); }
+	    if (pol != null) { klijent.setPol(pol); }
+	    if (datumRodj != null) { klijent.setDatumRodj(datumRodj); }
+	    if (telefon != null) { klijent.setTelefon(telefon); }
+	    if (email != null && !korisnickoImePostoji(email)) { klijent.setKorisnickoIme(email); klijent.setEmail(email); }
+	    if (lozinka != null) { klijent.setLozinka(lozinka); }
+	    if (kategorija != null) { klijent.setKategorija(kategorija); }
+	    if (datumVozacke != null) { klijent.setDatumVozacke(datumVozacke); }
+	    if (brojKasnjenja>=0) {klijent.setBrojKasnjenja(brojKasnjenja);}
+	    if (pretplata!= null) {klijent.setPretplata(pretplata);}
+	    if (zahtev != null) {klijent.setZahtev(zahtev);}
+	    sacuvajKlijente(this.putanjaKlijeti);
+	}
 	
 }

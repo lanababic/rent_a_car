@@ -253,4 +253,19 @@ public class IzdavanjeMenadzer {
 		this.svaIzdavanja.removeIf(iz -> iz.getIdIzdaje() == idIzdaje);
 		sacuvajIzdavanja(this.putanjaIzdavanja);
 	}
+	public void izmeniIzdaju(IzdavanjeVozila izdaja, Rezervacija rezervacija, Vozilo vozilo, Agent agentIzdao, Agent agentPrimio,
+			int kilometrazaPriPreuzimanju, int kilometrazaPriVracanju, LocalDate stvarniDatumVracanja, double naplacenaKazna) {
+		if (rezervacija != null) { izdaja.setRezervacija(rezervacija); }
+	    if (vozilo != null) { izdaja.setVozilo(vozilo); }
+	    if (agentIzdao != null) { izdaja.setAgentIzdao(agentIzdao); }
+	    if (agentPrimio != null) { izdaja.setAgentPrimio(agentPrimio); }
+	    if (kilometrazaPriPreuzimanju > 0) { izdaja.setKilometrazaPriPreuzimanju(kilometrazaPriPreuzimanju); }
+	    if (kilometrazaPriVracanju > kilometrazaPriPreuzimanju) {izdaja.setKilometrazaPriVracanju(kilometrazaPriVracanju); }
+	    if (stvarniDatumVracanja != null) { izdaja.setStvarniDatumVracanja(stvarniDatumVracanja); }
+	    if (naplacenaKazna >= 0) {izdaja.setNaplacenaKazna(naplacenaKazna);}
+	    double novaCena = izdaja.getRezervacija().getOsnovnaCena()+izdaja.getNaplacenaKazna();
+	    izdaja.setUkupnaCena(novaCena);
+	    sacuvajIzdavanja(this.putanjaIzdavanja);
+	    
+	}
 }

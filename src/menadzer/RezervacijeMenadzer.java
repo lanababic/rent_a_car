@@ -278,7 +278,7 @@ public class RezervacijeMenadzer {
 			rezervacija.setOsnovnaCena(osnovnaCena);
 			if(!klijent.getKategorija().equals(KategorijaKlijenta.BEZ_KATEGORIJE)) {
 				double osnCena = rezervacija.getOsnovnaCena();
-				osnCena = osnCena*trenutniCenovnik.getPopustZaKategorije();
+				osnCena = osnCena*(1-trenutniCenovnik.getPopustZaKategorije());
 				rezervacija.setOsnovnaCena(osnCena);
 			}
 			this.sveRezervacije.add(rezervacija);
@@ -341,6 +341,19 @@ public class RezervacijeMenadzer {
 	public void obrisiRezervaciju(int idRezervacije) {
 		this.sveRezervacije.removeIf(v -> v.getIdRezervacije() == idRezervacije);
 		sacuvajRezervacije(this.putanjaRezervacije);
+	}
+	public void izmeniRezervaciju(Rezervacija rezervacija, ModelVozila modelVozila, LocalDate datumOd, LocalDate datumDo,
+			  LocalDate datumPravljenja, Klijent klijent, StatusRezervacije status,
+			  ArrayList<DodatnaUsluga> listaDodatnihUsluga, FinansijeMenadzer finMen) {
+		if (modelVozila != null) { rezervacija.setModelVozila(modelVozila); }
+	    if (datumOd != null) { rezervacija.setDatumOd(datumOd); }
+	    if (datumDo != null) { rezervacija.setDatumDo(datumDo); }
+	    if (datumPravljenja != null) { rezervacija.setDatumPravljenja(datumPravljenja); }
+	    if (klijent != null) { rezervacija.setKlijent(klijent); }
+	    if (status != null) { rezervacija.setStatus(status); }
+	    if (listaDodatnihUsluga != null) { rezervacija.setListaDodatnihUsluga(listaDodatnihUsluga); }
+	    rezervacija.setOsnovnaCena(izracunajOsnovnuCenu(rezervacija, finMen));
+	    sacuvajRezervacije(this.putanjaRezervacije);
 	}
 	
 

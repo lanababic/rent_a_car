@@ -91,6 +91,9 @@ public class Cenovnik {
 	public void setCenaNajma(KategorijaVozila kat, double cena) {
         this.cenaNajma.put(kat, cena);
 	}
+	public void setCenaNajmaFull(Map<KategorijaVozila, Double> cenaNajma) {
+        this.cenaNajma=cenaNajma;
+	}
 	
 	
 	
@@ -102,6 +105,9 @@ public class Cenovnik {
 	}
 	public void setCenaDodatneUsluge(DodatnaUsluga usluga, double cena) {
         this.cenaDodatneUsluge.put(usluga, cena);
+	}
+	public void setCenaDodatneUslugeFull(Map<DodatnaUsluga, Double> cenaDodatneUsluge) {
+        this.cenaDodatneUsluge=cenaDodatneUsluge;
 	}
 	
 }

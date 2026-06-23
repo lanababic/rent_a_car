@@ -201,6 +201,20 @@ public class VoziloMenadzer {
 		this.svaVozila.removeIf(v -> v.getIdVozila() == idVozila);
 		sacuvajVozila(this.putanjaVozila);
 	}
+	public void izmeniVozilo(Vozilo vozilo, ModelVozila modelVozila, String registracijaVozila, int trenutnaKilometraza,
+			 StatusVozila status) {
+	    if (modelVozila != null) { vozilo.setModelVozila(modelVozila); }
+	    if (registracijaVozila != null) { vozilo.setRegistracijaVozila(registracijaVozila); }
+	    if (trenutnaKilometraza > vozilo.getTrenutnaKilometraza()) { vozilo.setTrenutnaKilometraza(trenutnaKilometraza); }
+	    if (status != null) { vozilo.setStatus(status); }
+	    sacuvajVozila(this.putanjaVozila);
+	}
+	public void izmeniModelVozila(ModelVozila model,KategorijaVozila kategorijaVozila, String naziv, String proizvodjac) {
+		if (kategorijaVozila != null) { model.setKategorijaVozila(kategorijaVozila); }
+	    if (naziv != null) { model.setNaziv(naziv); }
+	    if (proizvodjac != null) { model.setProizvodjac(proizvodjac); }
+	    sacuvajModeleVozila(this.putanjaModeliVozila);
+	}
 	
 	
 

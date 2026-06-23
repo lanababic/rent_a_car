@@ -8,6 +8,8 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
 import enums.*;
 
 public class FinansijeMenadzer {
@@ -284,6 +286,27 @@ public class FinansijeMenadzer {
 		this.sviCenovnici.removeIf(c -> c.getIdCenovnika() == idCenovnika);
 		sacuvajCenovnike(this.putanjaCenovnika);
 	}
+	public void izmeniPretplatu(Pretplata pretplata, Klijent klijent, LocalDate datumPocetak,LocalDate datumKraj, double cena) {
+		if (klijent != null) { pretplata.setKlijent(klijent); }
+	    if (datumPocetak != null) { pretplata.setDatumPocetak(datumPocetak); }
+	    if (datumKraj != null) { pretplata.setDatumKraj(datumKraj); }
+	    if (cena > 0) { pretplata.setCena(cena); }
+	    sacuvajPretplate(this.putanjaPretplate);
+	}
+	public void izmeniCenovnik(Cenovnik cenovnik, LocalDate datumPocetka, LocalDate datumKraja, double cenaGodisnjePretplate,
+			double kaznaZaKasnjenje, double popustZaKategorije, int daniNajma,
+			Map<KategorijaVozila, Double> cenaNajma, Map<DodatnaUsluga, Double> cenaDodatneUsluge) {
+		if (datumPocetka != null) { cenovnik.setDatumPocetka(datumPocetka); }
+	    if (datumKraja != null) { cenovnik.setDatumKraja(datumKraja); }
+	    if (cenaGodisnjePretplate > 0) { cenovnik.setCenaGodisnjePretplate(cenaGodisnjePretplate); }
+	    if (kaznaZaKasnjenje > 0) { cenovnik.setKaznaZaKasnjenje(kaznaZaKasnjenje); }
+	    if (popustZaKategorije >= 0) { cenovnik.setPopustZaKategorije(popustZaKategorije); }
+	    if (daniNajma > 0) { cenovnik.setDaniNajma(daniNajma); }
+	    if (cenaNajma != null && !cenaNajma.isEmpty()) { cenovnik.setCenaNajmaFull(cenaNajma); }
+	    if (cenaDodatneUsluge != null && !cenaDodatneUsluge.isEmpty()) { cenovnik.setCenaDodatneUslugeFull(cenaDodatneUsluge); }
+		sacuvajCenovnike(this.putanjaCenovnika);
+	}
+	
 	
 
 }
