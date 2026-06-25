@@ -1,6 +1,5 @@
 package menadzer;
 
-import model.*;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -8,7 +7,17 @@ import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
-import enums.*;
+
+import enums.StatusRezervacije;
+import enums.StatusVozila;
+import model.Agent;
+import model.Cenovnik;
+import model.DodatnaUsluga;
+import model.IzdavanjeVozila;
+import model.ModelVozila;
+import model.Osoba;
+import model.Rezervacija;
+import model.Vozilo;
 
 public class IzdavanjeMenadzer {
 	private ArrayList<IzdavanjeVozila> svaIzdavanja;
@@ -234,7 +243,7 @@ public class IzdavanjeMenadzer {
 		}
 		return lista;
 	}
-	public ArrayList<IzdavanjeVozila> odrediPrihodeZbogIzdajaUPeriodu(LocalDate datumOd, LocalDate datumDo){
+	public ArrayList<IzdavanjeVozila> odrediPrihodeUPeriodu(LocalDate datumOd, LocalDate datumDo){
 		ArrayList<IzdavanjeVozila> lista = new ArrayList<>();
 		for(IzdavanjeVozila iz: this.svaIzdavanja) {
 			if(iz.getRezervacija().getDatumOd().isAfter(datumOd)&& iz.getRezervacija().getDatumDo().isBefore(datumDo)) {
@@ -242,6 +251,14 @@ public class IzdavanjeMenadzer {
 			}
 		}
 		return lista;
+	}
+	public double ukupanPrihodUPeriodu(LocalDate datumOd, LocalDate datumDo) {
+		ArrayList<IzdavanjeVozila> lista = odrediPrihodeUPeriodu(datumOd, datumDo);
+		double ukupno =0;
+		for(IzdavanjeVozila iz: lista) {
+			ukupno = ukupno + iz.getUkupnaCena();
+		}
+		return ukupno;
 	}
 	public void vratiNaDostupnaZbogRezervacijeBezPojave() {
 		for(IzdavanjeVozila iz: this.svaIzdavanja) {
@@ -270,13 +287,29 @@ public class IzdavanjeMenadzer {
 	    sacuvajIzdavanja(this.putanjaIzdavanja);
 	    
 	}
-
 	public ArrayList<IzdavanjeVozila> getSvaIzdavanja() {
 		return svaIzdavanja;
 	}
-
 	public void setSvaIzdavanja(ArrayList<IzdavanjeVozila> svaIzdavanja) {
 		this.svaIzdavanja = svaIzdavanja;
+	}
+	public ArrayList<IzdavanjeVozila> izvestajIzdavanjaOdAgenta(Agent agent, LocalDate datumOd, LocalDate datumDo){
+		ArrayList<IzdavanjeVozila> lista = new ArrayList<>();
+		for (IzdavanjeVozila iz: this.svaIzdavanja) {
+			if (iz.getDatumPravljenjaIzdaje().isAfter(datumOd)&&iz.getDatumPravljenjaIzdaje().isBefore(datumDo)&&iz.getAgentIzdao().equals(agent)) {
+				lista.add(iz);
+			}
+		}
+		return lista;
+	}
+	public ArrayList<IzdavanjeVozila> izvestajIzdavanjaOModeluVozila(int idModela, LocalDate datumOd, LocalDate datumDo){
+		ArrayList<IzdavanjeVozila> lista = new ArrayList<>();
+		for (IzdavanjeVozila iz: this.svaIzdavanja) {
+			if (iz.getDatumPravljenjaIzdaje().isAfter(datumOd)&&iz.getDatumPravljenjaIzdaje().isBefore(datumDo)&&iz.getRezervacija().getModelVozila().getId()==idModela) {
+				lista.add(iz);
+			}
+		}
+		return lista;
 	}
 	
 }

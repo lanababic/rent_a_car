@@ -10,15 +10,18 @@ public class Agent extends Zaposleni {
 		// TODO Auto-generated constructor stub
 	}
 
+//	@Override
+//	public String toString() {
+//		return "Agent [toString()=" + super.toString() + ", getSprema()=" + getSprema() + ", getStaz()=" + getStaz()
+//				+ ", getOsnovnaPlata()=" + getOsnovnaPlata() + ", getIme()=" + getIme() + ", getPrezime()="
+//				+ getPrezime() + ", getPol()=" + getPol() + ", getDatumRodj()=" + getDatumRodj() + ", getTelefon()="
+//				+ getTelefon() + ", getEmail()=" + getEmail() + ", getKorisnickoIme()=" + getKorisnickoIme()
+//				+ ", getLozinka()=" + getLozinka() + ", getClass()=" + getClass() + ", hashCode()=" + hashCode() + "]";
+//	}
 	@Override
 	public String toString() {
-		return "Agent [toString()=" + super.toString() + ", getSprema()=" + getSprema() + ", getStaz()=" + getStaz()
-				+ ", getOsnovnaPlata()=" + getOsnovnaPlata() + ", getIme()=" + getIme() + ", getPrezime()="
-				+ getPrezime() + ", getPol()=" + getPol() + ", getDatumRodj()=" + getDatumRodj() + ", getTelefon()="
-				+ getTelefon() + ", getEmail()=" + getEmail() + ", getKorisnickoIme()=" + getKorisnickoIme()
-				+ ", getLozinka()=" + getLozinka() + ", getClass()=" + getClass() + ", hashCode()=" + hashCode() + "]";
+	    return this.getKorisnickoIme(); // ComboBox 
 	}
-	
 		
 	
 }

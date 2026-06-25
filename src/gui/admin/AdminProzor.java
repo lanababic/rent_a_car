@@ -83,7 +83,7 @@ public class AdminProzor extends JFrame {
 		// Otvaranje prozora za izveštaje
 		btnIzvestaji.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				IzvestajiProzor izvestajiProzor = new IzvestajiProzor();
+				IzvestajiProzor izvestajiProzor = new IzvestajiProzor(osobaMenadzer, voziloMenadzer,  finansijeMenadzer, izdavanjeMenadzer,  rezervacijeMenadzer);
 				izvestajiProzor.setVisible(true);
 			}
 		});

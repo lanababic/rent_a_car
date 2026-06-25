@@ -14,10 +14,14 @@ public class ModelVozila {
 		this.naziv = naziv;
 		this.proizvodjac = proizvodjac;
 	}
+//	@Override
+//	public String toString() {
+//		return "ModelVozila [id=" + idModela + ", kategorijaVozila=" + kategorijaVozila + ", naziv=" + naziv
+//				+ ", proizvodjac=" + proizvodjac + "]";
+//	}
 	@Override
 	public String toString() {
-		return "ModelVozila [id=" + idModela + ", kategorijaVozila=" + kategorijaVozila + ", naziv=" + naziv
-				+ ", proizvodjac=" + proizvodjac + "]";
+		return naziv;
 	}
 	public int getId() {
 		return idModela;

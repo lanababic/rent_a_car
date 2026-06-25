@@ -373,6 +373,46 @@ public class RezervacijeMenadzer {
 	    rezervacija.setOsnovnaCena(izracunajOsnovnuCenu(rezervacija, finMen));
 	    sacuvajRezervacije(this.putanjaRezervacije);
 	}
+	public ArrayList<Rezervacija> izvestajPotvrdjenihRezervacijaUPeriodu(LocalDate datumOd, LocalDate datumDo){
+		ArrayList<Rezervacija> lista = new ArrayList<>();
+		for(Rezervacija r: this.sveRezervacije) {
+			if(r.getDatumPravljenja().isAfter(datumOd)&&r.getDatumPravljenja().isBefore(datumDo)&&r.getStatus().equals(StatusRezervacije.POTVRDJENO)) {
+				lista.add(r);
+			}
+		}
+		
+		return lista;
+	}
+	public ArrayList<Rezervacija> izvestajOdbijenihRezervacijaUPeriodu(LocalDate datumOd, LocalDate datumDo){
+		ArrayList<Rezervacija> lista = new ArrayList<>();
+		for(Rezervacija r: this.sveRezervacije) {
+			if(r.getDatumPravljenja().isAfter(datumOd)&&r.getDatumPravljenja().isBefore(datumDo)&&r.getStatus().equals(StatusRezervacije.ODBIJENO)) {
+				lista.add(r);
+			}
+		}
+		
+		return lista;
+	}
+	public ArrayList<Rezervacija> izvestajOtkazanihRezervacijaUPeriodu(LocalDate datumOd, LocalDate datumDo){
+		ArrayList<Rezervacija> lista = new ArrayList<>();
+		for(Rezervacija r: this.sveRezervacije) {
+			if(r.getDatumPravljenja().isAfter(datumOd)&&r.getDatumPravljenja().isBefore(datumDo)&&r.getStatus().equals(StatusRezervacije.OTKAZANO)) {
+				lista.add(r);
+			}
+		}
+		
+		return lista;
+	}
+	public ArrayList<Rezervacija> izvestajRezervacijaOModeluVozila(int idModela, LocalDate datumOd, LocalDate datumDo){
+		ArrayList<Rezervacija> lista = new ArrayList<>();
+		for(Rezervacija r: this.sveRezervacije) {
+			if(r.getDatumPravljenja().isAfter(datumOd)&&r.getDatumPravljenja().isBefore(datumDo)&&r.getModelVozila().getId()==idModela) {
+				lista.add(r);
+			}
+		}
+		
+		return lista;
+	}
 	
 
 }

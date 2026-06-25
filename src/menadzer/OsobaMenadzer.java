@@ -371,6 +371,14 @@ public class OsobaMenadzer {
 		}
 		return rashodi;
 	}
+	public double ukupanRaskohUPeriodu(LocalDate datumOd, LocalDate datumDo) {
+		Map<String, Double> rashodi =odrediRashodeUPeriodu(datumOd, datumDo);
+		double ukupno = 0;
+		for (Double vrednost : rashodi.values()) {
+			ukupno = ukupno + vrednost;
+		}
+		return ukupno;
+	}
 	public void podnesiZahtev() {
 		Klijent k = pronadjiKlijentaPoKorisnickomImenu(this.trenutnoUlogovan.getKorisnickoIme());
 		if (k.getBrojKasnjenja() > 5) {
