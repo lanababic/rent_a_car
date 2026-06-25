@@ -6,6 +6,7 @@ public class Zaposleni extends Osoba {
 	private StrucnaSprema sprema;
 	private int staz;
 	private double osnovnaPlata;
+	private double osnovac = 70000.0;
 
 	public Zaposleni(String ime, String prezime, Pol pol, LocalDate datumRodj, String telefon, String email,
 			String korisnickoIme, String lozinka, StrucnaSprema sprema, int staz, double osnovnaPlata) {
@@ -13,6 +14,14 @@ public class Zaposleni extends Osoba {
 		this.sprema = sprema;
 		this.staz = staz;
 		this.osnovnaPlata = osnovnaPlata;
+	}
+	
+	public double getOsnovac() {
+		return osnovac;
+	}
+
+	public void setOsnovac(double osnovac) {
+		this.osnovac = osnovac;
 	}
 
 	@Override

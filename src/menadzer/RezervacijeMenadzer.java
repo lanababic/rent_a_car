@@ -22,16 +22,18 @@ import model.Vozilo;
 
 public class RezervacijeMenadzer {
 	private ArrayList<Rezervacija> sveRezervacije;
-	private ArrayList<DodatnaUsluga> sveDodatneUsluge;
+	public ArrayList<DodatnaUsluga> sveDodatneUsluge;
 	private final String putanjaRezervacije = "podaci/rezervacije.csv";
 	private final String putanjaDodatneUsluge = "podaci/dodatneUsluge.csv";
 	
-	public RezervacijeMenadzer(VoziloMenadzer vozMen, OsobaMenadzer osobMen) {
-		this.sveRezervacije = new ArrayList<>();
-		this.sveDodatneUsluge = new ArrayList<>();
-		
-		ucitajDodatneUsluge(this.putanjaDodatneUsluge);
-		ucitajRezervacije(this.putanjaRezervacije, vozMen, osobMen);
+	public RezervacijeMenadzer() {
+	    this.sveRezervacije = new ArrayList<>();
+	    this.sveDodatneUsluge = new ArrayList<>();
+	}
+
+	public void ucitajPodatke(VoziloMenadzer vozMen, OsobaMenadzer osobMen) {
+	    ucitajDodatneUsluge(this.putanjaDodatneUsluge);
+	    ucitajRezervacije(this.putanjaRezervacije, vozMen, osobMen);
 	}
 	
 	public void sacuvajRezervacije(String putanjaRezervacije) {
@@ -85,7 +87,7 @@ public class RezervacijeMenadzer {
 	            );
 	            StatusRezervacije stvarniStatus = StatusRezervacije.valueOf(parts[4]);
 	            r.setStatus(stvarniStatus); 
-	            if(parts.length > 8 && !parts[8].trim().isEmpty()) {
+	            if(parts.length > 8 && !parts[8].trim().isEmpty() && !parts[8].equals("null")) {
 	            	String[] idDodatnihUsluga = parts[8].split(",");
 		            for (String s : idDodatnihUsluga) {
 		            	int id = Integer.parseInt(s.trim());
@@ -132,6 +134,22 @@ public class RezervacijeMenadzer {
 	        e.printStackTrace();
 	    }
 	}
+	public ArrayList<Rezervacija> getSveRezervacije() {
+		return sveRezervacije;
+	}
+
+	public void setSveRezervacije(ArrayList<Rezervacija> sveRezervacije) {
+		this.sveRezervacije = sveRezervacije;
+	}
+
+	public ArrayList<DodatnaUsluga> getSveDodatneUsluge() {
+		return sveDodatneUsluge;
+	}
+
+	public void setSveDodatneUsluge(ArrayList<DodatnaUsluga> sveDodatneUsluge) {
+		this.sveDodatneUsluge = sveDodatneUsluge;
+	}
+
 	public DodatnaUsluga pronadjiUsluguPoId(int id) {
 	    for (DodatnaUsluga u : this.sveDodatneUsluge) {
 	        if (u.getIdDodatneUsluge() == id) {

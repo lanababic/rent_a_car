@@ -30,15 +30,17 @@ public class OsobaMenadzer {
 	private final String putanjaAdmini = "podaci/admini.csv";
 	private Osoba trenutnoUlogovan;
 	
-	public OsobaMenadzer(FinansijeMenadzer finMen) {
-		this.sviKlijenti = new ArrayList<>();
-		this.sviAgenti = new ArrayList<>();
-		this.sviAdmini = new ArrayList<>();
-		this.trenutnoUlogovan=null;
-		
-		ucitajKlijente(this.putanjaKlijeti, finMen);
-		ucitajAgente(this.putanjaAgenti);
-		ucitajAdmine(this.putanjaAdmini);
+	public OsobaMenadzer() {
+	    this.sviKlijenti = new ArrayList<>();
+	    this.sviAgenti = new ArrayList<>();
+	    this.sviAdmini = new ArrayList<>();
+	    this.trenutnoUlogovan = null;
+	}
+
+	public void ucitajPodatke() {
+	    ucitajKlijente(this.putanjaKlijeti);
+	    ucitajAgente(this.putanjaAgenti);
+	    ucitajAdmine(this.putanjaAdmini);
 	}
 	
 	public String getPutanjaKlijeti() {
@@ -53,42 +55,91 @@ public class OsobaMenadzer {
 		return putanjaAdmini;
 	}
 
-	private void ucitajKlijente(String putanjaKlijenti, FinansijeMenadzer finMen) {
-		try {
-			List<String> lines = Files.readAllLines(Paths.get(putanjaKlijenti));
-			for (String line: lines) {
-				String[] parts = line.split(";");
-				Klijent k = new Klijent(
-						parts[0],								//ime
-						parts[1],								//prezime
-						Pol.valueOf(parts[2]),					//pol
-						LocalDate.parse(parts[3]),				//datum Rodj
-						parts[4],								//relfon
-						parts[5],								//email
-						parts[6],								//lozinka
-						KategorijaKlijenta.valueOf(parts[7]),	//kategirjaKlijenta
-						LocalDate.parse(parts[8]),				//datumVozacke
-						Integer.parseInt(parts[9])				//brojKasnjenja
-				);			
-				LocalDate datumOtkazivanja = null;
-	            if (!parts[10].equals("null")) {
-	                datumOtkazivanja = LocalDate.parse(parts[10]);
-	            }
+//	private void ucitajKlijente(String putanjaKlijenti, FinansijeMenadzer finMen) {
+//		try {
+//			List<String> lines = Files.readAllLines(Paths.get(putanjaKlijenti));
+//			for (String line: lines) {
+//				String[] parts = line.split(";");
+//				Klijent k = new Klijent(
+//						parts[0],								//ime
+//						parts[1],								//prezime
+//						Pol.valueOf(parts[2]),					//pol
+//						LocalDate.parse(parts[3]),				//datum Rodj
+//						parts[4],								//relfon
+//						parts[5],								//email
+//						parts[6],								//lozinka
+//						KategorijaKlijenta.valueOf(parts[7]),	//kategirjaKlijenta
+//						LocalDate.parse(parts[8]),				//datumVozacke
+//						Integer.parseInt(parts[9])				//brojKasnjenja
+//				);			
+//				LocalDate datumOtkazivanja = null;
+//	            if (!parts[10].equals("null")) {
+//	                datumOtkazivanja = LocalDate.parse(parts[10]);
+//	            }
+//	            k.setDatumOtkazivanja(datumOtkazivanja);
+//	            Pretplata pretplata = null;
+//	            if (!parts[11].equals("null")) {
+//	                int idPretplate =Integer.parseInt(parts[11]);
+//	                pretplata = finMen.PronadjiPretplatuPoId(idPretplate);
+//	            }
+//	            k.setPretplata(pretplata);
+//	            ZahtevPretplate zahtev = ZahtevPretplate.valueOf(parts[12]);
+//	            k.setZahtev(zahtev);
+//				this.sviKlijenti.add(k);
+//			}
+//		}
+//		catch(IOException e) {
+//			e.printStackTrace();
+//		}
+//	}
+	private void ucitajKlijente(String putanjaKlijenti) {
+	    try {
+	        List<String> lines = Files.readAllLines(Paths.get(putanjaKlijenti));
+	        for (String line: lines) {
+	            String[] parts = line.split(";");
+	            Klijent k = new Klijent(
+	                parts[0], parts[1], Pol.valueOf(parts[2]), LocalDate.parse(parts[3]),
+	                parts[4], parts[5], parts[7], KategorijaKlijenta.valueOf(parts[8]),
+	                LocalDate.parse(parts[9]), Integer.parseInt(parts[10])
+	                //Lana;Lukić;ZENSKO;2002-05-14;063111222;c;c;c;BEZ_KATEGORIJE;2021-06-15;0;null;1;NEMA
+	            );            
+	            LocalDate datumOtkazivanja = parts[11].equals("null") ? null : LocalDate.parse(parts[11]);
 	            k.setDatumOtkazivanja(datumOtkazivanja);
-	            Pretplata pretplata = null;
-	            if (!parts[11].equals("null")) {
-	                int idPretplate =Integer.parseInt(parts[11]);
-	                pretplata = finMen.PronadjiPretplatuPoId(idPretplate);
-	            }
-	            k.setPretplata(pretplata);
-	            ZahtevPretplate zahtev = ZahtevPretplate.valueOf(parts[12]);
+	            
+	            // Privremeno stavljamo null, jer pretplate još nisu učitane
+	            k.setPretplata(null); 
+	            
+	            ZahtevPretplate zahtev = ZahtevPretplate.valueOf(parts[13]);
 	            k.setZahtev(zahtev);
-				this.sviKlijenti.add(k);
-			}
-		}
-		catch(IOException e) {
-			e.printStackTrace();
-		}
+	            this.sviKlijenti.add(k);
+	        }
+	    } catch(IOException e) {
+	        e.printStackTrace();
+	    }
+	}
+	public void poveziKlijenteSaPretplatama(FinansijeMenadzer finMen, String putanjaKlijenti) {
+	    try {
+	        List<String> lines = Files.readAllLines(Paths.get(putanjaKlijenti));
+	        for (String line : lines) {
+	            String[] parts = line.split(";");
+	            String emailKlijenta = parts[5]; // email/korisničko ime klijenta
+	            
+	            if (!parts[12].equals("null")) {
+	                int idPretplate = Integer.parseInt(parts[12]);
+	                
+	                // Pronalazimo već učitanog klijenta u memoriji
+	                Klijent k = this.pronadjiKlijentaPoKorisnickomImenu(emailKlijenta);
+	                // Pronalazimo učitanu pretplatu
+	                Pretplata p = finMen.PronadjiPretplatuPoId(idPretplate);
+	                
+	                if (k != null && p != null) {
+	                    k.setPretplata(p);
+	                }
+	            }
+	        }
+	    } catch (IOException e) {
+	        e.printStackTrace();
+	    }
 	}
 	private void ucitajAdmine(String putanjaAdmini) {
 	    try {
@@ -217,29 +268,26 @@ public class OsobaMenadzer {
 	    for(Klijent k : sviKlijenti) if(k.getKorisnickoIme().equals(korIme)) return true; // ili email za klijenta
 	    return false;
 	}
-	public void logIn(String korisnickoIme, String lozinka) {
-		for(Admin ad: this.sviAdmini ) {
-			String korIme = ad.getKorisnickoIme();
-			String loz = ad.getLozinka();
-			if(korIme.equals(korisnickoIme) && loz.equals(lozinka)) {
-				this.trenutnoUlogovan=ad;
-			}
-		}
-		for(Agent ad: this.sviAgenti) {
-			String korIme = ad.getKorisnickoIme();
-			String loz = ad.getLozinka();
-			if(korIme.equals(korisnickoIme) && loz.equals(lozinka)) {
-				this.trenutnoUlogovan=ad;
-			}
-		}
-		for(Klijent ad: this.sviKlijenti) {
-			String korIme = ad.getKorisnickoIme();
-			String loz = ad.getLozinka();
-			String email = ad.getEmail();
-			if((korIme.equals(korisnickoIme) || korIme.equals(email)) && loz.equals(lozinka)) {
-				this.trenutnoUlogovan=ad;
-			}
-		}
+	public Osoba logIn(String korisnickoIme, String lozinka) {
+	    for(Admin ad: this.sviAdmini ) {
+	        if(ad.getKorisnickoIme().equals(korisnickoIme) && ad.getLozinka().equals(lozinka)) {
+	            this.trenutnoUlogovan = ad;
+	            return ad;
+	        }
+	    }
+	    for(Agent ag: this.sviAgenti) {
+	        if(ag.getKorisnickoIme().equals(korisnickoIme) && ag.getLozinka().equals(lozinka)) {
+	            this.trenutnoUlogovan = ag;
+	            return ag;
+	        }
+	    }
+	    for(Klijent kl: this.sviKlijenti) {
+	        if((kl.getKorisnickoIme().equals(korisnickoIme) || kl.getEmail().equals(korisnickoIme)) && kl.getLozinka().equals(lozinka)) {
+	            this.trenutnoUlogovan = kl;
+	            return kl;
+	        }
+	    }
+	    return null; // Pogrešno korisničko ime ili lozinka
 	}
 	public void odjava() {
 		this.trenutnoUlogovan=null;
@@ -266,7 +314,7 @@ public class OsobaMenadzer {
 	}
 	public double izracunajPlatu(Zaposleni radnik) {
 		double koeficijent = radnik.getSprema().getKoefijent();
-		double plata = radnik.getOsnovnaPlata() *(koeficijent + 0.004*radnik.getStaz());
+		double plata = radnik.getOsnovac() *(koeficijent + 0.004*radnik.getStaz());
 		return plata;
 	}
 	public void registrujNovogKlijenta(String ime, String prezime, Pol pol, LocalDate datumRodj, String telefon, String email,
@@ -375,6 +423,30 @@ public class OsobaMenadzer {
 	    agent.setOsnovnaPlata(izracunajPlatu(agent));
 	    sacuvajAgente(this.putanjaAgenti);
 	}
+	public ArrayList<Klijent> getSviKlijenti() {
+		return sviKlijenti;
+	}
+
+	public void setSviKlijenti(ArrayList<Klijent> sviKlijenti) {
+		this.sviKlijenti = sviKlijenti;
+	}
+
+	public ArrayList<Agent> getSviAgenti() {
+		return sviAgenti;
+	}
+
+	public void setSviAgenti(ArrayList<Agent> sviAgenti) {
+		this.sviAgenti = sviAgenti;
+	}
+
+	public ArrayList<Admin> getSviAdmini() {
+		return sviAdmini;
+	}
+
+	public void setSviAdmini(ArrayList<Admin> sviAdmini) {
+		this.sviAdmini = sviAdmini;
+	}
+
 	public void izmeniAdmina(Admin agent, String ime, String prezime, Pol pol, LocalDate datumRodj, String telefon, String email,
 			String korisnickoIme, String lozinka, StrucnaSprema sprema, int staz, double osnovnaPlata) {
 		if (ime != null) { agent.setIme(ime); }

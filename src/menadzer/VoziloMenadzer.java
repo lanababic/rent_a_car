@@ -16,13 +16,31 @@ public class VoziloMenadzer {
 	private final String putanjaModeliVozila = "podaci/modeliVozila.csv";
 	
 	public VoziloMenadzer() {
-		this.svaVozila = new ArrayList<>();
-		this.sviModeliVozila = new ArrayList<>();
-		
-		ucitajModeleVozila(this.putanjaModeliVozila);
-		ucitajVozila(this.putanjaVozila);
+	    this.svaVozila = new ArrayList<>();
+	    this.sviModeliVozila = new ArrayList<>();
+	}
+
+	public void ucitajPodatke() {
+	    ucitajModeleVozila(this.putanjaModeliVozila);
+	    ucitajVozila(this.putanjaVozila);
 	}
 	
+	public ArrayList<Vozilo> getSvaVozila() {
+		return svaVozila;
+	}
+
+	public void setSvaVozila(ArrayList<Vozilo> svaVozila) {
+		this.svaVozila = svaVozila;
+	}
+
+	public ArrayList<ModelVozila> getSviModeliVozila() {
+		return sviModeliVozila;
+	}
+
+	public void setSviModeliVozila(ArrayList<ModelVozila> sviModeliVozila) {
+		this.sviModeliVozila = sviModeliVozila;
+	}
+
 	public void sacuvajModeleVozila(String putanjaModeli) {
 	    ArrayList<String> lines = new ArrayList<String>();
 	    for (ModelVozila m : this.sviModeliVozila) {

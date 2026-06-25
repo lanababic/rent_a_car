@@ -14,10 +14,12 @@ public class IzdavanjeMenadzer {
 	private ArrayList<IzdavanjeVozila> svaIzdavanja;
 	private final String putanjaIzdavanja = "podaci/izdavanja.csv";
 	
-	public IzdavanjeMenadzer( RezervacijeMenadzer rezMen, VoziloMenadzer vozMen, OsobaMenadzer korMen) {
-		this.svaIzdavanja = new ArrayList<>();
-		
-		ucitajIzdavanja(this.putanjaIzdavanja, rezMen, vozMen,korMen);
+	public IzdavanjeMenadzer() {
+	    this.svaIzdavanja = new ArrayList<>();
+	}
+
+	public void ucitajPodatke(RezervacijeMenadzer rezMen, VoziloMenadzer vozMen, OsobaMenadzer korMen) {
+	    ucitajIzdavanja(this.putanjaIzdavanja, rezMen, vozMen, korMen);
 	}
 	public String getPutanjaIzdavanja() {
 		return putanjaIzdavanja;
@@ -268,4 +270,13 @@ public class IzdavanjeMenadzer {
 	    sacuvajIzdavanja(this.putanjaIzdavanja);
 	    
 	}
+
+	public ArrayList<IzdavanjeVozila> getSvaIzdavanja() {
+		return svaIzdavanja;
+	}
+
+	public void setSvaIzdavanja(ArrayList<IzdavanjeVozila> svaIzdavanja) {
+		this.svaIzdavanja = svaIzdavanja;
+	}
+	
 }

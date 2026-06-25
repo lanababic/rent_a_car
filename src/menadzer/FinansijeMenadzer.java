@@ -19,13 +19,15 @@ public class FinansijeMenadzer {
 	private final String putanjaCenovnika = "podaci/cenovnici.csv";
 	private Cenovnik trenutniCenovnik;
 	
-	public FinansijeMenadzer(OsobaMenadzer osobaMen, RezervacijeMenadzer rezMen) {
-		this.svePretplate = new ArrayList<>();
-		this.sviCenovnici = new ArrayList<>();
-		
-		ucitajPretplate(this.putanjaPretplate, osobaMen);
-		ucitajCenovnike(this.putanjaCenovnika, rezMen);
-		this.trenutniCenovnik=OdrediTrenutniCenovnik();
+	public FinansijeMenadzer() {
+	    this.svePretplate = new ArrayList<>();
+	    this.sviCenovnici = new ArrayList<>();
+	}
+
+	public void ucitajPodatke(OsobaMenadzer osobaMen, RezervacijeMenadzer rezMen) {
+	    ucitajPretplate(this.putanjaPretplate, osobaMen);
+	    ucitajCenovnike(this.putanjaCenovnika, rezMen);
+	    this.trenutniCenovnik = OdrediTrenutniCenovnik();
 	}
 	
 	public String getPutanjaPretplate() {
@@ -205,6 +207,12 @@ public class FinansijeMenadzer {
 		}
 		return max + 1;
 	}
+	public void dodajSveCeneDodatnimUslugama(Cenovnik c, RezervacijeMenadzer rezMen) {
+		for(DodatnaUsluga du: rezMen.sveDodatneUsluge) {
+			double cena =0;//treba u gui
+			c.setCenaDodatneUsluge(du, cena);
+		}
+	}
 	public void dodajSveDodatneUslugeCene(Cenovnik c, RezervacijeMenadzer rezMen) {
 		int koliko = 0;//treba u gui
 		DodatnaUsluga d = new DodatnaUsluga(1, "Produzeni dan");
@@ -218,8 +226,16 @@ public class FinansijeMenadzer {
 			c.setCenaDodatneUsluge(du, cena);
 		}
 	}
+	public void dodajJosJednuDodatnuUslugu(Cenovnik c, RezervacijeMenadzer rezMen, String nazivDodatneUsluge, double cenaDodatneUsluge) {
+		int idDodatneUsluge = rezMen.generisiNoviIdDodatneUsluge();
+		DodatnaUsluga du = new DodatnaUsluga(idDodatneUsluge, nazivDodatneUsluge);
+		c.setCenaDodatneUsluge(du, cenaDodatneUsluge);
+	}
+	public void odrediCenuProduzenogDana(Cenovnik c, RezervacijeMenadzer rezMen, double cenaProduzenogDana) {
+		DodatnaUsluga d = new DodatnaUsluga(1, "Produzeni dan");
+		c.setCenaDodatneUsluge(d, cenaProduzenogDana);
+	}
 	public void dodajSveCeneNajma(Cenovnik c) {
-		int koliko = 0;//treba u gui
 		for(KategorijaVozila k: KategorijaVozila.values()) {
 			double cena = 0;//treba u gui
 			c.setCenaNajma(k, cena);
@@ -243,11 +259,12 @@ public class FinansijeMenadzer {
 		}
 		return lista;
 	}
-	public void napraviCenovnik(LocalDate datumPocetka, LocalDate datumKraja, double cenaGodisnjePretplate, double kaznaZaKasnjenje, double popustZaKategorije, int daniNajma, RezervacijeMenadzer rezMen) {
+	public void napraviCenovnik(LocalDate datumPocetka, LocalDate datumKraja, double cenaGodisnjePretplate, double kaznaZaKasnjenje,
+			double popustZaKategorije, int daniNajma, RezervacijeMenadzer rezMen, double cenaProduzenogDana) {
 		int idCenovnika = generisiNoviIdCenovnika();
 		Cenovnik c = new Cenovnik(idCenovnika, datumPocetka, datumKraja, cenaGodisnjePretplate,
 				kaznaZaKasnjenje,popustZaKategorije,daniNajma);
-		dodajSveDodatneUslugeCene(c, rezMen);
+		odrediCenuProduzenogDana(c, rezMen, cenaProduzenogDana);
 		dodajSveCeneNajma(c);
 		sacuvajCenovnike(this.putanjaCenovnika);
 	}
@@ -286,6 +303,10 @@ public class FinansijeMenadzer {
 		this.sviCenovnici.removeIf(c -> c.getIdCenovnika() == idCenovnika);
 		sacuvajCenovnike(this.putanjaCenovnika);
 	}
+	public void obrisiPretplatu(int idPretplate) {
+		this.svePretplate.removeIf(c -> c.getIdPretplate() == idPretplate);
+		sacuvajPretplate(this.putanjaPretplate);
+	}
 	public void izmeniPretplatu(Pretplata pretplata, Klijent klijent, LocalDate datumPocetak,LocalDate datumKraj, double cena) {
 		if (klijent != null) { pretplata.setKlijent(klijent); }
 	    if (datumPocetak != null) { pretplata.setDatumPocetak(datumPocetak); }
@@ -304,6 +325,45 @@ public class FinansijeMenadzer {
 	    if (daniNajma > 0) { cenovnik.setDaniNajma(daniNajma); }
 	    if (cenaNajma != null && !cenaNajma.isEmpty()) { cenovnik.setCenaNajmaFull(cenaNajma); }
 	    if (cenaDodatneUsluge != null && !cenaDodatneUsluge.isEmpty()) { cenovnik.setCenaDodatneUslugeFull(cenaDodatneUsluge); }
+		sacuvajCenovnike(this.putanjaCenovnika);
+	}
+
+	public ArrayList<Pretplata> getSvePretplate() {
+		return svePretplate;
+	}
+
+	public void setSvePretplate(ArrayList<Pretplata> svePretplate) {
+		this.svePretplate = svePretplate;
+	}
+
+	public ArrayList<Cenovnik> getSviCenovnici() {
+		return sviCenovnici;
+	}
+
+	public void setSviCenovnici(ArrayList<Cenovnik> sviCenovnici) {
+		this.sviCenovnici = sviCenovnici;
+	}
+	public void napraviCenovnik(LocalDate datumPocetka, LocalDate datumKraja, double cenaGodisnjePretplate, double kaznaZaKasnjenje,
+			double popustZaKategorije, int daniNajma, RezervacijeMenadzer rezMen, double cenaProduzenogDana, 
+			java.util.Map<String, Double> privremeneUsluge, java.util.Map<enums.KategorijaVozila, Double> ceneKategorija) {
+		
+		int idCenovnika = generisiNoviIdCenovnika();
+		Cenovnik c = new Cenovnik(idCenovnika, datumPocetka, datumKraja, cenaGodisnjePretplate,
+				kaznaZaKasnjenje, popustZaKategorije, daniNajma);
+		
+		odrediCenuProduzenogDana(c, rezMen, cenaProduzenogDana);
+		
+		// Umesto stare metode sa nulama, punimo cenovnik unetim cenama iz GUI-ja:
+		for (java.util.Map.Entry<enums.KategorijaVozila, Double> entry : ceneKategorija.entrySet()) {
+			c.setCenaNajma(entry.getKey(), entry.getValue());
+		}
+		
+		// Punjenje dodatnih usluga
+		for (java.util.Map.Entry<String, Double> entry : privremeneUsluge.entrySet()) {
+			dodajJosJednuDodatnuUslugu(c, rezMen, entry.getKey(), entry.getValue());
+		}
+		
+		this.sviCenovnici.add(c); // ili kako god da ti se zove lista u menadžeru
 		sacuvajCenovnike(this.putanjaCenovnika);
 	}
 	
