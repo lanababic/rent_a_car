@@ -112,11 +112,9 @@ public class IzdavanjeMenadzer {
 		}
 		return max + 1;
 	}
-	private boolean isVoziloSlobodnoUPeriodu(Vozilo v, LocalDate trazeniOd, LocalDate trazeniDo) {
-	    // Prolazimo kroz sva izdanja/potvrđene rezervacije u sistemu
+	public boolean isVoziloSlobodnoUPeriodu(Vozilo v, LocalDate trazeniOd, LocalDate trazeniDo) {
 	    for (IzdavanjeVozila izdavanje : svaIzdavanja) {
 	        
-	        // Zanimaju nas samo zapisi koji se odnose na ovo konkretno fizičko vozilo
 	        if (izdavanje.getVozilo() != null && izdavanje.getVozilo().getIdVozila() == v.getIdVozila()) {
 	            
 	            // Moramo proveriti status povezane rezervacije
@@ -150,7 +148,6 @@ public class IzdavanjeMenadzer {
 	    return false; // Svi fizički primerci ovog modela su zauzeti u tom periodu.
 	}
 	public Vozilo OdaberiVozilo(ArrayList<Vozilo> listaMogucihVozila, Rezervacija rezervacija) {
-		//treba nekako da predlozi sva moguca vozila pa da se unese id vozila i da to bude vozilo
 		listaMogucihVozila.removeIf(v -> !isVoziloSlobodnoUPeriodu(v, rezervacija.getDatumOd(), rezervacija.getDatumDo()));
 		if (listaMogucihVozila.isEmpty()) {
 	        return null; // Nema slobodnih vozila
@@ -180,18 +177,20 @@ public class IzdavanjeMenadzer {
 		double osnovnaCena = rezMen.izracunajOsnovnuCenu(rezervacija, finMen);
 		rezervacija.setOsnovnaCena(osnovnaCena);
 	}
-	public void IzdavanjeVozilaPrviDeo(Rezervacija rezervacija, VoziloMenadzer vozMen, OsobaMenadzer osobMen, RezervacijeMenadzer rezMen, FinansijeMenadzer finMen) {
+	public void dodajJosJednuDodatnuUslugu(int idDodatneUsluge, Rezervacija rezervacija, RezervacijeMenadzer rezMen) {
+		DodatnaUsluga du = rezMen.pronadjiUsluguPoId(idDodatneUsluge);
+		rezervacija.dodajDodatnuUslugu(du);
+	}
+	public ArrayList<Vozilo> listaMogucihVozila (Rezervacija rezervacija, VoziloMenadzer vozMen){
 		ArrayList<Vozilo> listaMogucihVozila = new ArrayList<>();
-		listaMogucihVozila = vozMen.pronadjiVozilaPoModelu(rezervacija.getModelVozila());//zapravo ne trena pronadjiVozilaSlobodnaPrekoModela jer ce mozda vozilo koje nije trnutno DOSTUPSNO biti posle
-		Vozilo odabranoVozilo = OdaberiVozilo(listaMogucihVozila, rezervacija);
+		listaMogucihVozila = vozMen.pronadjiVozilaPoModelu(rezervacija.getModelVozila());
+		return listaMogucihVozila;
+	}
+	public void IzdavanjeVozilaPrviDeo(Rezervacija rezervacija, VoziloMenadzer vozMen, OsobaMenadzer osobMen, RezervacijeMenadzer rezMen, FinansijeMenadzer finMen, Vozilo odabranoVozilo, ArrayList<Vozilo> listaMogucihVozila) {
 		Osoba trenutnoUlogovan = osobMen.getTrenutnoUlogovan();
 		Agent trenutniAgent = osobMen.pronadjiAgentaPoKorisnickomImenu(trenutnoUlogovan.getKorisnickoIme());
-		if(trenutniAgent == null) {
-			//prijavi gresku
-		}
 		int kilometrazaPriPreuzimanju = odabranoVozilo.getTrenutnaKilometraza();
 		int idIzdaje = generisiNoviIdIznajmljivanjeVozila();
-		predloziJosDodatnihUsluga(rezervacija, rezMen,  finMen);
 		IzdavanjeVozila izdaja = new IzdavanjeVozila(idIzdaje,rezervacija, odabranoVozilo, trenutniAgent,null,kilometrazaPriPreuzimanju, 0, null);		
 		odabranoVozilo.setStatus(StatusVozila.IZDATO);
 		vozMen.sacuvajVozila(vozMen.getPutanjaVozila());
@@ -212,9 +211,6 @@ public class IzdavanjeMenadzer {
 	public void IzdavanjeVozilaVracanje(IzdavanjeVozila izdaja, int novaKilometraza, VoziloMenadzer vozMen, OsobaMenadzer osobMen, FinansijeMenadzer finMen) {
 		Osoba trenutnoUlogovan = osobMen.getTrenutnoUlogovan();
 		Agent trenutniAgent = osobMen.pronadjiAgentaPoKorisnickomImenu(trenutnoUlogovan.getKorisnickoIme());
-		if(trenutniAgent == null) {
-			//prijavi gresku
-		}
 		izdaja.setAgentPrimio(trenutniAgent);
 		Vozilo izdatoVozilo = izdaja.getVozilo();
 		izdatoVozilo.setTrenutnaKilometraza(novaKilometraza);
@@ -340,6 +336,22 @@ public class IzdavanjeMenadzer {
 			}
 		}
 		return rezultat;
+	}
+	public boolean imaliIzdajuTaRezervacija(Rezervacija r) {
+		for(IzdavanjeVozila iz: this.svaIzdavanja) {
+			if(iz.getRezervacija().equals(r)) {
+				return true;
+			}
+		}
+		return false;
+	}
+	public IzdavanjeVozila pronadjiIzdavanjePoId(int idIzdaje) {
+		for(IzdavanjeVozila iz: this.svaIzdavanja) {
+			if(iz.getIdIzdaje()==idIzdaje) {
+				return iz;
+			}
+		}
+		return null;
 	}
 	
 }

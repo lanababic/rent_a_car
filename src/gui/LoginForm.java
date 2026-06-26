@@ -1,7 +1,6 @@
 package gui;
 
 import java.awt.Color;
-import java.awt.EventQueue;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
@@ -15,6 +14,7 @@ import javax.swing.JTextField;
 import javax.swing.border.EmptyBorder;
 
 import gui.admin.AdminProzor;
+import gui.agent.AgentProzor;
 import menadzer.FinansijeMenadzer;
 import menadzer.IzdavanjeMenadzer;
 import menadzer.OsobaMenadzer;
@@ -68,8 +68,8 @@ public class LoginForm extends JFrame {
 			            adminProzor.setVisible(true);
 			            LoginForm.this.dispose();
 			        } else if (ulogovanaOsoba instanceof Agent) {
-			            //AgentProzor agentProzor = new AgentProzor(osobaMenadzer, ...);
-			            //agentProzor.setVisible(true);
+			            AgentProzor agentProzor = new AgentProzor(osobaMenadzer, voziloMenadzer, finansijeMenadzer, izdavanjeMenadzer, rezervacijeMenadzer);
+			            agentProzor.setVisible(true);
 			        } else if (ulogovanaOsoba instanceof Klijent) {
 			            //KlijentProzor klijentProzor = new KlijentProzor(osobaMenadzer, ...);
 			            //klijentProzor.setVisible(true);
