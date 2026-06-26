@@ -202,6 +202,7 @@ public class OsobaMenadzer {
                     k.getPol() + ";" + 
                     k.getDatumRodj() + ";" + 
                     k.getTelefon() + ";" + 
+                    k.getKorisnickoIme() + ";" + 
                     k.getEmail() + ";" + 
                     k.getLozinka() + ";" + 
                     k.getKategorija() + ";" + 
@@ -211,6 +212,7 @@ public class OsobaMenadzer {
                     idPretplateS+ ";" +
                     k.getZahtev();
 			lines.add(line);
+			//Lana;Lukić;ZENSKO;2002-05-14;063111222;c;c;c;BEZ_KATEGORIJE;2021-06-15;0;null;1;NEMA
 		}
 		try {
 			Files.write(Paths.get(putanjaKlijeti), lines);
@@ -389,8 +391,10 @@ public class OsobaMenadzer {
 	    sacuvajKlijente(this.putanjaKlijeti);
 	}
 	public void odobriZahtev(Klijent k) {
-		k.setZahtev(ZahtevPretplate.ODOBREN);
-		sacuvajKlijente(this.putanjaKlijeti);
+		if(k.getBrojKasnjenja()<6) {
+			k.setZahtev(ZahtevPretplate.ODOBREN);
+			sacuvajKlijente(this.putanjaKlijeti);
+		}
 	}
 	public void odbiZahtev(Klijent k) {
 		k.setZahtev(ZahtevPretplate.ODBIJEN);

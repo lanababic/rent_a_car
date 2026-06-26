@@ -40,7 +40,7 @@ public class AgentProzor extends JFrame {
 		
 		setTitle("Agentski Panel - Glavni Meni");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setBounds(100, 100, 500, 450); // Blago povećana visina (sa 400 na 450) zbog 4 dugmeta
+		setBounds(100, 100, 500, 500); // Blago povećana visina (sa 400 na 450) zbog 4 dugmeta
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
@@ -77,9 +77,14 @@ public class AgentProzor extends JFrame {
 		btnVozila.setBounds(100, 260, 280, 45);
 		contentPane.add(btnVozila);
 		
+		JButton btnPretplate = new JButton("Pretplate");
+		btnPretplate.setFont(new Font("Tahoma", Font.PLAIN, 14));
+		btnPretplate.setBounds(100, 320, 280, 45);
+		contentPane.add(btnPretplate);
+		
 		// Dugme za odjavu
 		JButton btnOdjava = new JButton("Odjava");
-		btnOdjava.setBounds(365, 360, 100, 30);
+		btnOdjava.setBounds(365, 420, 100, 30);
 		contentPane.add(btnOdjava);
 		
 		// --- AKCIJE NA DUGMIĆIMA ---
@@ -116,6 +121,15 @@ public class AgentProzor extends JFrame {
 				PregledVozilaProzor vozilaProzor = new PregledVozilaProzor(osobaMenadzer, voziloMenadzer, finansijeMenadzer, izdavanjeMenadzer, rezervacijeMenadzer);
 				vozilaProzor.setVisible(true);
 				dispose();
+			}
+		});
+		
+		btnPretplate.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				PretplateProzor Prozor = new PretplateProzor(osobaMenadzer, voziloMenadzer, finansijeMenadzer, izdavanjeMenadzer, rezervacijeMenadzer);
+				Prozor.setVisible(true);
+				setVisible(false);
+				//dispose();
 			}
 		});
 		
