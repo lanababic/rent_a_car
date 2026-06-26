@@ -80,7 +80,6 @@ public class AdminProzor extends JFrame {
 			}
 		});
 		
-		// Otvaranje prozora za izveštaje
 		btnIzvestaji.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				IzvestajiProzor izvestajiProzor = new IzvestajiProzor(osobaMenadzer, voziloMenadzer,  finansijeMenadzer, izdavanjeMenadzer,  rezervacijeMenadzer);
@@ -88,15 +87,13 @@ public class AdminProzor extends JFrame {
 			}
 		});
 		
-		// Otvaranje prozora sa grafikonima
 		btnChartovi.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				StatistikaGraficiProzor graficiProzor = new StatistikaGraficiProzor();
-				graficiProzor.setVisible(true);
-			}
+		    public void actionPerformed(ActionEvent e) {
+		        StatistikaGraficiProzor graficiProzor = new StatistikaGraficiProzor(osobaMenadzer, izdavanjeMenadzer,  rezervacijeMenadzer,  finansijeMenadzer);
+		        graficiProzor.setVisible(true);
+		    }
 		});
 		
-		// Odjava sa sistema
 		btnOdjava.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				osobaMenadzer.odjava();

@@ -8,6 +8,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 
+import enums.KategorijaKlijenta;
 import enums.StatusRezervacije;
 import enums.StatusVozila;
 import model.Agent;
@@ -260,6 +261,24 @@ public class IzdavanjeMenadzer {
 		}
 		return ukupno;
 	}
+	public ArrayList<IzdavanjeVozila> odrediPrihodeUPerioduZaKategoriju(LocalDate datumOd, LocalDate datumDo, KategorijaKlijenta kategorija){
+		ArrayList<IzdavanjeVozila> lista = new ArrayList<>();
+		for(IzdavanjeVozila iz: this.svaIzdavanja) {
+			if(!iz.getRezervacija().getDatumOd().isBefore(datumOd)&& !iz.getRezervacija().getDatumDo().isAfter(datumDo)) {
+				if(iz.getRezervacija().getKlijent().getKategorija().equals(kategorija)) {
+					lista.add(iz);
+				}
+			}
+		}
+		return lista;
+	}
+	public double ukupanPrihodOdKategorije(ArrayList<IzdavanjeVozila> lista) {
+		double ukupno =0;
+		for(IzdavanjeVozila iz: lista) {
+			ukupno = ukupno + iz.getUkupnaCena();
+		}
+		return ukupno;
+	}
 	public void vratiNaDostupnaZbogRezervacijeBezPojave() {
 		for(IzdavanjeVozila iz: this.svaIzdavanja) {
 			if(iz.getRezervacija().getStatus().equals(StatusRezervacije.OTKAZANO)) {
@@ -310,6 +329,17 @@ public class IzdavanjeMenadzer {
 			}
 		}
 		return lista;
+	}
+	public int brojObradjenRezervacijaOdAgenta(Agent a) {
+		int rezultat = 0;
+		LocalDate danas = LocalDate.now();
+		LocalDate mesecPre = danas.minusMonths(1);
+		for(IzdavanjeVozila iz: this.svaIzdavanja) {
+			if(iz.getAgentIzdao().equals(a)&&!iz.getDatumPravljenjaIzdaje().isBefore(mesecPre)&&!iz.getDatumPravljenjaIzdaje().isAfter(danas)) {
+				rezultat++;
+			}
+		}
+		return rezultat;
 	}
 	
 }

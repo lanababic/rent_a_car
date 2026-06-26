@@ -413,6 +413,16 @@ public class RezervacijeMenadzer {
 		
 		return lista;
 	}
-	
+	public int brojRezervacijaSStatusom(StatusRezervacije status) {
+		LocalDate danas = LocalDate.now();
+		LocalDate mesecPre = danas.minusMonths(1);
+		int ukupno = 0;
+		for(Rezervacija r: this.sveRezervacije) {
+			if(!r.getDatumPravljenja().isAfter(danas)&&!r.getDatumPravljenja().isBefore(mesecPre)&&r.getStatus().equals(status)) {
+				ukupno++;
+			}
+		}
+		return ukupno;
+	}
 
 }
