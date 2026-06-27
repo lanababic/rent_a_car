@@ -208,13 +208,13 @@ public class VoziloMenadzer {
 		this.svaVozila.add(v);
 		sacuvajVozila(this.putanjaVozila);
 	}
-	public void obrisiModelVozila(int idModela) {
-		this.sviModeliVozila.removeIf(m -> m.getId() == idModela);
-	    this.svaVozila.removeIf(v -> v.getModelVozila().getId() == idModela);
-		sacuvajModeleVozila(this.putanjaModeliVozila);
-		sacuvajVozila(this.putanjaVozila);
-		
-	}
+//	public void obrisiModelVozila(int idModela) {
+//		this.sviModeliVozila.removeIf(m -> m.getId() == idModela);
+//	    this.svaVozila.removeIf(v -> v.getModelVozila().getId() == idModela);
+//		sacuvajModeleVozila(this.putanjaModeliVozila);
+//		sacuvajVozila(this.putanjaVozila);
+//		
+//	}
 	public void obrisiVozilo(int idVozila) {
 		this.svaVozila.removeIf(v -> v.getIdVozila() == idVozila);
 		sacuvajVozila(this.putanjaVozila);

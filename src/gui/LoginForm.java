@@ -15,6 +15,7 @@ import javax.swing.border.EmptyBorder;
 
 import gui.admin.AdminProzor;
 import gui.agent.AgentProzor;
+import gui.klijent.KlijentProzor;
 import menadzer.FinansijeMenadzer;
 import menadzer.IzdavanjeMenadzer;
 import menadzer.OsobaMenadzer;
@@ -71,8 +72,8 @@ public class LoginForm extends JFrame {
 			            AgentProzor agentProzor = new AgentProzor(osobaMenadzer, voziloMenadzer, finansijeMenadzer, izdavanjeMenadzer, rezervacijeMenadzer);
 			            agentProzor.setVisible(true);
 			        } else if (ulogovanaOsoba instanceof Klijent) {
-			            //KlijentProzor klijentProzor = new KlijentProzor(osobaMenadzer, ...);
-			            //klijentProzor.setVisible(true);
+			            KlijentProzor klijentProzor = new KlijentProzor(osobaMenadzer, voziloMenadzer, finansijeMenadzer, izdavanjeMenadzer, rezervacijeMenadzer);
+			            klijentProzor.setVisible(true);
 			        }
 
 			        // Zatvori login prozor

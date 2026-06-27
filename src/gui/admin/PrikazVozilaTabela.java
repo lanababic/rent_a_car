@@ -73,11 +73,9 @@ public class PrikazVozilaTabela extends JFrame {
 			tableModel.addRow(red);
 		}
 
-		// JScrollPane za skrolovanje i prikaz zaglavlja kolona
 		JScrollPane scrollPane = new JScrollPane(tabela);
 		contentPane.add(scrollPane, BorderLayout.CENTER);
 
-		// Donji panel za dugme Zatvori
 		JPanel panelJug = new JPanel();
 		JButton btnZatvori = new JButton("Zatvori");
 		btnZatvori.addActionListener(e -> dispose());
