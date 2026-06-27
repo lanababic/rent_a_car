@@ -25,9 +25,9 @@ public class OsobaMenadzer {
 	private ArrayList<Klijent> sviKlijenti;
 	private ArrayList<Agent> sviAgenti;
 	private ArrayList<Admin> sviAdmini;
-	private final String putanjaKlijeti = "podaci/klijenti.csv";
-	private final String putanjaAgenti = "podaci/agenti.csv";
-	private final String putanjaAdmini = "podaci/admini.csv";
+	private String putanjaKlijenti;
+    private String putanjaAgenti;
+    private String putanjaAdmini;
 	private Osoba trenutnoUlogovan;
 	
 	public OsobaMenadzer() {
@@ -35,63 +35,41 @@ public class OsobaMenadzer {
 	    this.sviAgenti = new ArrayList<>();
 	    this.sviAdmini = new ArrayList<>();
 	    this.trenutnoUlogovan = null;
+	    this.putanjaKlijenti = "podaci/klijenti.csv";
+        this.putanjaAgenti = "podaci/agenti.csv";
+        this.putanjaAdmini = "podaci/admini.csv";
 	}
 
 	public void ucitajPodatke() {
-	    ucitajKlijente(this.putanjaKlijeti);
+	    ucitajKlijente(this.putanjaKlijenti);
 	    ucitajAgente(this.putanjaAgenti);
 	    ucitajAdmine(this.putanjaAdmini);
 	}
+	public OsobaMenadzer(String putanjaKlijenti, String putanjaAgenti, String putanjaAdmini) {
+		this.sviKlijenti = new ArrayList<>();
+	    this.sviAgenti = new ArrayList<>();
+	    this.sviAdmini = new ArrayList<>();
+	    this.trenutnoUlogovan = null;
+	    this.putanjaKlijenti = putanjaKlijenti;
+	    this.putanjaAgenti = putanjaAgenti;
+	    this.putanjaAdmini = putanjaAdmini;
+	    ucitajKlijente(putanjaKlijenti);
+	    ucitajAgente(putanjaAgenti);
+	    ucitajAdmine(putanjaAdmini);
+	}
 	
 	public String getPutanjaKlijeti() {
-		return putanjaKlijeti;
+		return this.putanjaKlijenti;
 	}
 
 	public String getPutanjaAgenti() {
-		return putanjaAgenti;
+		return this.putanjaAgenti;
 	}
 
 	public String getPutanjaAdmini() {
-		return putanjaAdmini;
+		return this.putanjaAdmini;
 	}
 
-//	private void ucitajKlijente(String putanjaKlijenti, FinansijeMenadzer finMen) {
-//		try {
-//			List<String> lines = Files.readAllLines(Paths.get(putanjaKlijenti));
-//			for (String line: lines) {
-//				String[] parts = line.split(";");
-//				Klijent k = new Klijent(
-//						parts[0],								//ime
-//						parts[1],								//prezime
-//						Pol.valueOf(parts[2]),					//pol
-//						LocalDate.parse(parts[3]),				//datum Rodj
-//						parts[4],								//relfon
-//						parts[5],								//email
-//						parts[6],								//lozinka
-//						KategorijaKlijenta.valueOf(parts[7]),	//kategirjaKlijenta
-//						LocalDate.parse(parts[8]),				//datumVozacke
-//						Integer.parseInt(parts[9])				//brojKasnjenja
-//				);			
-//				LocalDate datumOtkazivanja = null;
-//	            if (!parts[10].equals("null")) {
-//	                datumOtkazivanja = LocalDate.parse(parts[10]);
-//	            }
-//	            k.setDatumOtkazivanja(datumOtkazivanja);
-//	            Pretplata pretplata = null;
-//	            if (!parts[11].equals("null")) {
-//	                int idPretplate =Integer.parseInt(parts[11]);
-//	                pretplata = finMen.PronadjiPretplatuPoId(idPretplate);
-//	            }
-//	            k.setPretplata(pretplata);
-//	            ZahtevPretplate zahtev = ZahtevPretplate.valueOf(parts[12]);
-//	            k.setZahtev(zahtev);
-//				this.sviKlijenti.add(k);
-//			}
-//		}
-//		catch(IOException e) {
-//			e.printStackTrace();
-//		}
-//	}
 	private void ucitajKlijente(String putanjaKlijenti) {
 	    try {
 	        List<String> lines = Files.readAllLines(Paths.get(putanjaKlijenti));
@@ -126,10 +104,7 @@ public class OsobaMenadzer {
 	            
 	            if (!parts[12].equals("null")) {
 	                int idPretplate = Integer.parseInt(parts[12]);
-	                
-	                // Pronalazimo već učitanog klijenta u memoriji
 	                Klijent k = this.pronadjiKlijentaPoKorisnickomImenu(emailKlijenta);
-	                // Pronalazimo učitanu pretplatu
 	                Pretplata p = finMen.PronadjiPretplatuPoId(idPretplate);
 	                
 	                if (k != null && p != null) {
@@ -325,7 +300,7 @@ public class OsobaMenadzer {
 		if(!korisnickoImePostoji(email)) {
 			Klijent novi = new Klijent(ime, prezime,pol, datumRodj, telefon, email,lozinka, kategorija,datumVozacke, brojKasnjenja);
 			sviKlijenti.add(novi);
-			sacuvajKlijente(this.putanjaKlijeti);
+			sacuvajKlijente(this.putanjaKlijenti);
 		}
 	}
 	public Agent pronadjiAgentaPoKorisnickomImenu(String korIme) {
@@ -388,17 +363,17 @@ public class OsobaMenadzer {
 	    } else {
 	        k.setZahtev(ZahtevPretplate.POSLAT);
 	    }
-	    sacuvajKlijente(this.putanjaKlijeti);
+	    sacuvajKlijente(this.putanjaKlijenti);
 	}
 	public void odobriZahtev(Klijent k) {
 		if(k.getBrojKasnjenja()<6) {
 			k.setZahtev(ZahtevPretplate.ODOBREN);
-			sacuvajKlijente(this.putanjaKlijeti);
+			sacuvajKlijente(this.putanjaKlijenti);
 		}
 	}
 	public void odbiZahtev(Klijent k) {
 		k.setZahtev(ZahtevPretplate.ODBIJEN);
-		sacuvajKlijente(this.putanjaKlijeti);
+		sacuvajKlijente(this.putanjaKlijenti);
 	}
 	public void odbiSveStoKasne() {
 		for(Klijent k: this.sviKlijenti) {
@@ -406,7 +381,7 @@ public class OsobaMenadzer {
 				odbiZahtev(k);
 			}
 		}
-		sacuvajKlijente(this.putanjaKlijeti);
+		sacuvajKlijente(this.putanjaKlijenti);
 	}
 	public void obrisiAdmina(String korisnickoIme) {
 		this.sviAdmini.removeIf(ad -> ad.getKorisnickoIme().equals(korisnickoIme));
@@ -418,7 +393,7 @@ public class OsobaMenadzer {
 	}
 	public void obrisiKlijenta(String korisnickoIme) {
 		this.sviKlijenti.removeIf(ad -> ad.getKorisnickoIme().equals(korisnickoIme));
-		sacuvajKlijente(this.putanjaKlijeti);
+		sacuvajKlijente(this.putanjaKlijenti);
 	}
 	public void izmeniAgenta(Agent agent, String ime, String prezime, Pol pol, LocalDate datumRodj, String telefon, String email,
 			String korisnickoIme, String lozinka, StrucnaSprema sprema, int staz, double osnovnaPlata) {
@@ -488,7 +463,14 @@ public class OsobaMenadzer {
 	    if (brojKasnjenja>=0) {klijent.setBrojKasnjenja(brojKasnjenja);}
 	    if (pretplata!= null) {klijent.setPretplata(pretplata);}
 	    if (zahtev != null) {klijent.setZahtev(zahtev);}
-	    sacuvajKlijente(this.putanjaKlijeti);
+	    sacuvajKlijente(this.putanjaKlijenti);
+	}
+
+	public String getPutanjaKlijenti() {
+		return putanjaKlijenti;
+	}
+	public void setTrenutnoUlogovan(Osoba trenutnoUlogovan) {
+		this.trenutnoUlogovan = trenutnoUlogovan;
 	}
 	
 }

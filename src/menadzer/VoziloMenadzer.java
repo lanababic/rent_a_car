@@ -11,19 +11,28 @@ import enums.*;
 
 public class VoziloMenadzer {
 	private ArrayList<Vozilo> svaVozila;
-	private ArrayList<ModelVozila> sviModeliVozila;
-	private final String putanjaVozila = "podaci/vozila.csv";
-	private final String putanjaModeliVozila = "podaci/modeliVozila.csv";
-	
-	public VoziloMenadzer() {
-	    this.svaVozila = new ArrayList<>();
-	    this.sviModeliVozila = new ArrayList<>();
-	}
-
-	public void ucitajPodatke() {
-	    ucitajModeleVozila(this.putanjaModeliVozila);
-	    ucitajVozila(this.putanjaVozila);
-	}
+    private ArrayList<ModelVozila> sviModeliVozila;
+    private String putanjaVozila;
+    private String putanjaModeliVozila;
+    
+    public VoziloMenadzer() {
+        this.svaVozila = new ArrayList<>();
+        this.sviModeliVozila = new ArrayList<>();
+        this.putanjaVozila = "podaci/vozila.csv";
+        this.putanjaModeliVozila = "podaci/modeliVozila.csv";
+    }
+    public void ucitajPodatke() {
+        ucitajModeleVozila(this.putanjaModeliVozila);
+        ucitajVozila(this.putanjaVozila);
+    }
+    public VoziloMenadzer(String putanjaVozila, String putanjaModeliVozila) {
+        this.svaVozila = new ArrayList<>();
+        this.sviModeliVozila = new ArrayList<>();
+        this.putanjaVozila = putanjaVozila;
+        this.putanjaModeliVozila = putanjaModeliVozila;
+        ucitajModeleVozila(putanjaModeliVozila);
+        ucitajVozila(putanjaVozila);
+    }
 	
 	public ArrayList<Vozilo> getSvaVozila() {
 		return svaVozila;
@@ -171,7 +180,7 @@ public class VoziloMenadzer {
 	}
 
 	public String getPutanjaVozila() {
-		return putanjaVozila;
+		return this.putanjaVozila;
 	}
 
 	public String getPutanjaModeliVozila() {

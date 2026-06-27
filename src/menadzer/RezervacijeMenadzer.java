@@ -22,19 +22,30 @@ import model.Vozilo;
 
 public class RezervacijeMenadzer {
 	private ArrayList<Rezervacija> sveRezervacije;
-	public ArrayList<DodatnaUsluga> sveDodatneUsluge;
-	private final String putanjaRezervacije = "podaci/rezervacije.csv";
-	private final String putanjaDodatneUsluge = "podaci/dodatneUsluge.csv";
-	
-	public RezervacijeMenadzer() {
-	    this.sveRezervacije = new ArrayList<>();
-	    this.sveDodatneUsluge = new ArrayList<>();
-	}
+    public ArrayList<DodatnaUsluga> sveDodatneUsluge;
+    private String putanjaRezervacije;
+    private String putanjaDodatneUsluge;
+    
+    public RezervacijeMenadzer() {
+        this.sveRezervacije = new ArrayList<>();
+        this.sveDodatneUsluge = new ArrayList<>();
+        this.putanjaRezervacije = "podaci/rezervacije.csv";
+        this.putanjaDodatneUsluge = "podaci/dodatneUsluge.csv";
+    }
 
-	public void ucitajPodatke(VoziloMenadzer vozMen, OsobaMenadzer osobMen) {
-	    ucitajDodatneUsluge(this.putanjaDodatneUsluge);
-	    ucitajRezervacije(this.putanjaRezervacije, vozMen, osobMen);
-	}
+    public void ucitajPodatke(VoziloMenadzer vozMen, OsobaMenadzer osobMen) {
+        ucitajDodatneUsluge(this.putanjaDodatneUsluge);
+        ucitajRezervacije(this.putanjaRezervacije, vozMen, osobMen);
+    }
+
+    public RezervacijeMenadzer(String putanjaRezervacije, String putanjaDodatneUsluge, VoziloMenadzer vozMen, OsobaMenadzer osobMen) {
+        this.sveRezervacije = new ArrayList<>();
+        this.sveDodatneUsluge = new ArrayList<>();
+        this.putanjaRezervacije = putanjaRezervacije;
+        this.putanjaDodatneUsluge = putanjaDodatneUsluge;
+        ucitajDodatneUsluge(putanjaDodatneUsluge);
+        ucitajRezervacije(putanjaRezervacije, vozMen, osobMen);
+    }
 	
 	public void sacuvajRezervacije(String putanjaRezervacije) {
 	    ArrayList<String> linesRezervacije = new ArrayList<String>();
@@ -220,16 +231,19 @@ public class RezervacijeMenadzer {
 		sacuvajRezervacije(this.putanjaRezervacije);
 	}
 	public boolean isOtkazaoUPoslenjih24h(Klijent klijent) {
-		LocalDate danas = LocalDate.now();
-		LocalDate danas24h = LocalDate.now().minusDays(1);
-		LocalDate datumOtkazivanja = klijent.getDatumOtkazivanja();
-		if (datumOtkazivanja == null) {
+	    LocalDate danas = LocalDate.now();
+	    LocalDate juce = danas.minusDays(1);
+	    LocalDate datumOtkazivanja = klijent.getDatumOtkazivanja();
+	    
+	    if (datumOtkazivanja == null) {
 	        return false;
 	    }
-		if(datumOtkazivanja.isAfter(danas24h) && datumOtkazivanja.isBefore(danas)) {
-			return true;
-		}
-		return false;
+	    
+	    // Ako je datum otkazivanja jednak današnjem ili jučerašnjem datumu
+	    if (datumOtkazivanja.equals(danas) || datumOtkazivanja.equals(juce)) {
+	        return true;
+	    }
+	    return false;
 	}
 	public LocalDate racunanjeDatumaDo(LocalDate datumOd, ArrayList<DodatnaUsluga> listaDodatnih, FinansijeMenadzer finMen) {
 		int dodatniDani = 0;

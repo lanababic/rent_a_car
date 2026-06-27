@@ -22,15 +22,21 @@ import model.Vozilo;
 
 public class IzdavanjeMenadzer {
 	private ArrayList<IzdavanjeVozila> svaIzdavanja;
-	private final String putanjaIzdavanja = "podaci/izdavanja.csv";
-	
-	public IzdavanjeMenadzer() {
-	    this.svaIzdavanja = new ArrayList<>();
-	}
-
-	public void ucitajPodatke(RezervacijeMenadzer rezMen, VoziloMenadzer vozMen, OsobaMenadzer korMen) {
-	    ucitajIzdavanja(this.putanjaIzdavanja, rezMen, vozMen, korMen);
-	}
+    private String putanjaIzdavanja;
+    
+    public IzdavanjeMenadzer() {
+        this.svaIzdavanja = new ArrayList<>();
+        this.putanjaIzdavanja = "podaci/izdavanja.csv";
+    }
+    public void ucitajPodatke(RezervacijeMenadzer rezMen, VoziloMenadzer vozMen, OsobaMenadzer korMen) {
+        ucitajIzdavanja(this.putanjaIzdavanja, rezMen, vozMen, korMen);
+    }
+    public IzdavanjeMenadzer(String putanjaIzdavanja, RezervacijeMenadzer rezMen, VoziloMenadzer vozMen, OsobaMenadzer korMen) {
+        this.svaIzdavanja = new ArrayList<>();
+        this.putanjaIzdavanja = putanjaIzdavanja;
+        ucitajIzdavanja(putanjaIzdavanja, rezMen, vozMen, korMen);
+    }
+    
 	public String getPutanjaIzdavanja() {
 		return putanjaIzdavanja;
 	}
@@ -156,14 +162,6 @@ public class IzdavanjeMenadzer {
 		Vozilo odabrano = listaMogucihVozila.get(idVozila);
 		return odabrano;
 	}
-//	public void IznajmiVoziloSamoPotvrda(Rezervacija rezervacija, RezervacijeMenadzer rezMen, VoziloMenadzer vozMen) {
-//		int idIzdaje = generisiNoviIdIznajmljivanjeVozila();
-//		rezMen.potvrdiRezervaciju(rezervacija, vozMen, this);
-//		ArrayList<Vozilo> listaMogucihVozila = vozMen.pronadjiVozilaSlobodnaPrekoModela(rezervacija.getModelVozila());
-//		Vozilo vozilo = OdaberiVozilo(listaMogucihVozila);
-//		IzdavanjeVozila idavanjeVozila = new IzdavanjeVozila(idIzdaje,rezervacija,vozilo, null, null,0,0, null);
-//		sacuvajIzdavanja(this.putanjaIzdavanja);
-//	}
 	public void predloziJosDodatnihUsluga(Rezervacija rezervacija, RezervacijeMenadzer rezMen, FinansijeMenadzer finMen){
 		ArrayList<DodatnaUsluga> listaDodatnih = new ArrayList<>();
 		rezMen.predloziDodatneUsluge(listaDodatnih);

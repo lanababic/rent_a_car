@@ -14,21 +14,33 @@ import enums.*;
 
 public class FinansijeMenadzer {
 	private ArrayList<Pretplata> svePretplate;
-	private ArrayList<Cenovnik> sviCenovnici;
-	private final String putanjaPretplate = "podaci/pretplate.csv";
-	private final String putanjaCenovnika = "podaci/cenovnici.csv";
-	private Cenovnik trenutniCenovnik;
-	
-	public FinansijeMenadzer() {
-	    this.svePretplate = new ArrayList<>();
-	    this.sviCenovnici = new ArrayList<>();
-	}
+    private ArrayList<Cenovnik> sviCenovnici;
+    private String putanjaPretplate;
+    private String putanjaCenovnika;
+    private Cenovnik trenutniCenovnik;
+    
+    public FinansijeMenadzer() {
+        this.svePretplate = new ArrayList<>();
+        this.sviCenovnici = new ArrayList<>();
+        this.putanjaPretplate = "podaci/pretplate.csv";
+        this.putanjaCenovnika = "podaci/cenovnici.csv";
+    }
 
-	public void ucitajPodatke(OsobaMenadzer osobaMen, RezervacijeMenadzer rezMen) {
-	    ucitajPretplate(this.putanjaPretplate, osobaMen);
-	    ucitajCenovnike(this.putanjaCenovnika, rezMen);
-	    this.trenutniCenovnik = OdrediTrenutniCenovnik();
-	}
+    public void ucitajPodatke(OsobaMenadzer osobaMen, RezervacijeMenadzer rezMen) {
+        ucitajPretplate(this.putanjaPretplate, osobaMen);
+        ucitajCenovnike(this.putanjaCenovnika, rezMen);
+        this.trenutniCenovnik = OdrediTrenutniCenovnik();
+    }
+
+    public FinansijeMenadzer(String putanjaPretplate, String putanjaCenovnika, OsobaMenadzer osobaMen, RezervacijeMenadzer rezMen) {
+        this.svePretplate = new ArrayList<>();
+        this.sviCenovnici = new ArrayList<>();
+        this.putanjaPretplate = putanjaPretplate;
+        this.putanjaCenovnika = putanjaCenovnika;
+        ucitajPretplate(putanjaPretplate, osobaMen);
+        ucitajCenovnike(putanjaCenovnika, rezMen);
+        this.trenutniCenovnik = OdrediTrenutniCenovnik();
+    }
 	
 	public String getPutanjaPretplate() {
 		return putanjaPretplate;
@@ -253,7 +265,7 @@ public class FinansijeMenadzer {
 	public ArrayList<Pretplata> odrediPrihodeZbogPretplataUPeriodu(LocalDate datumOd, LocalDate datumDo){
 		ArrayList<Pretplata> lista = new ArrayList<>();
 		for(Pretplata p: this.svePretplate) {
-			if(p.getDatumPocetak().isAfter(datumOd)&&p.getDatumPocetak().isBefore(datumDo)) {
+			if (!p.getDatumPocetak().isBefore(datumOd) && !p.getDatumPocetak().isAfter(datumDo)) {
 				lista.add(p);
 			}
 		}
@@ -274,6 +286,7 @@ public class FinansijeMenadzer {
 			LocalDate datumPocetak = LocalDate.now();
 			double cena = this.trenutniCenovnik.getCenaGodisnjePretplate();
 			Pretplata p = new Pretplata(idPretplate, klijent, datumPocetak, cena);
+			this.svePretplate.add(p);
 			klijent.setPretplata(p);
 			klijent.setZahtev(ZahtevPretplate.NEMA);
 			osobMen.sacuvajKlijente(osobMen.getPutanjaKlijeti());
