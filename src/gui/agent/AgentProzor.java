@@ -1,5 +1,6 @@
 package gui.agent;
 
+import gui.admin.PrikazRezervacijaTabela;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -40,7 +41,7 @@ public class AgentProzor extends JFrame {
 		
 		setTitle("Agentski Panel - Glavni Meni");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setBounds(100, 100, 500, 500); // Blago povećana visina (sa 400 na 450) zbog 4 dugmeta
+		setBounds(100, 100, 500, 540); // Blago povećana visina (sa 400 na 450) zbog 4 dugmeta
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
@@ -56,35 +57,40 @@ public class AgentProzor extends JFrame {
 		// 1. Dugme: Iznajmljivanje
 		JButton btnIznajmljivanje = new JButton("Iznajmljivanje Vozila");
 		btnIznajmljivanje.setFont(new Font("Tahoma", Font.PLAIN, 14));
-		btnIznajmljivanje.setBounds(100, 80, 280, 45);
+		btnIznajmljivanje.setBounds(100, 80, 280, 40);
 		contentPane.add(btnIznajmljivanje);
 		
 		// 2. Dugme: Rezervacije
 		JButton btnRezervacije = new JButton("Upravljanje Rezervacijama");
 		btnRezervacije.setFont(new Font("Tahoma", Font.PLAIN, 14));
-		btnRezervacije.setBounds(100, 140, 280, 45);
+		btnRezervacije.setBounds(100, 140, 280, 40);
 		contentPane.add(btnRezervacije);
+		
+		JButton btnSveRezervacije = new JButton("Pregled svih rezervacija");
+		btnSveRezervacije.setFont(new Font("Tahoma", Font.PLAIN, 14));
+		btnSveRezervacije.setBounds(100, 200, 280, 40);
+		contentPane.add(btnSveRezervacije);
 		
 		// 3. Dugme: Registracija Klijenta
 		JButton btnRegistracijaKlijenta = new JButton("Registracija Klijenta");
 		btnRegistracijaKlijenta.setFont(new Font("Tahoma", Font.PLAIN, 14));
-		btnRegistracijaKlijenta.setBounds(100, 200, 280, 45);
+		btnRegistracijaKlijenta.setBounds(100, 260, 280, 40);
 		contentPane.add(btnRegistracijaKlijenta);
 		
 		// 4. Dugme: Vozila
 		JButton btnVozila = new JButton("Pregled Vozila");
 		btnVozila.setFont(new Font("Tahoma", Font.PLAIN, 14));
-		btnVozila.setBounds(100, 260, 280, 45);
+		btnVozila.setBounds(100, 320, 280, 40);
 		contentPane.add(btnVozila);
 		
 		JButton btnPretplate = new JButton("Pretplate");
 		btnPretplate.setFont(new Font("Tahoma", Font.PLAIN, 14));
-		btnPretplate.setBounds(100, 320, 280, 45);
+		btnPretplate.setBounds(100, 380, 280, 40);
 		contentPane.add(btnPretplate);
 		
 		// Dugme za odjavu
 		JButton btnOdjava = new JButton("Odjava");
-		btnOdjava.setBounds(365, 420, 100, 30);
+		btnOdjava.setBounds(365, 450, 100, 30);
 		contentPane.add(btnOdjava);
 		
 		// --- AKCIJE NA DUGMIĆIMA ---
@@ -105,6 +111,13 @@ public class AgentProzor extends JFrame {
 				AgentRezervacijeProzor rezProzor = new AgentRezervacijeProzor(osobaMenadzer, voziloMenadzer, finansijeMenadzer, izdavanjeMenadzer, rezervacijeMenadzer);
 				rezProzor.setVisible(true);
 				dispose();
+			}
+		});
+		
+		btnSveRezervacije.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				PrikazRezervacijaTabela rezProzor = new PrikazRezervacijaTabela(rezervacijeMenadzer);
+				rezProzor.setVisible(true);
 			}
 		});
 		

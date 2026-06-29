@@ -3,21 +3,25 @@ package gui.klijent;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.time.LocalDate;
+
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
-import javax.swing.JOptionPane;
 
+import enums.ZahtevPretplate;
 import gui.LoginForm;
 import menadzer.FinansijeMenadzer;
 import menadzer.IzdavanjeMenadzer;
 import menadzer.OsobaMenadzer;
 import menadzer.RezervacijeMenadzer;
 import menadzer.VoziloMenadzer;
-import enums.*;
+import model.Klijent;
+import model.Osoba;
 
 
 public class KlijentProzor extends JFrame {
@@ -31,7 +35,7 @@ public class KlijentProzor extends JFrame {
 		
 		setTitle("Klijentski Panel - Glavni Meni");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setBounds(100, 100, 500, 400);
+		setBounds(100, 100, 500, 470);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
@@ -43,28 +47,37 @@ public class KlijentProzor extends JFrame {
 		lblNaslov.setFont(new Font("Tahoma", Font.BOLD, 18));
 		lblNaslov.setBounds(10, 30, 464, 30);
 		contentPane.add(lblNaslov);
-		
-		// 1. Dugme: Zahtev za pretplatu
+
+
 		JButton btnPretplata = new JButton("Zahtev za pretplatu");
 		btnPretplata.setFont(new Font("Tahoma", Font.PLAIN, 14));
-		btnPretplata.setBounds(100, 100, 280, 45);
+		btnPretplata.setBounds(100, 100, 280, 35);
 		contentPane.add(btnPretplata);
-		
-		// 2. Dugme: Dostupna vozila
+
 		JButton btnDostupnaVozila = new JButton("Dostupna vozila");
 		btnDostupnaVozila.setFont(new Font("Tahoma", Font.PLAIN, 14));
-		btnDostupnaVozila.setBounds(100, 165, 280, 45);
+		btnDostupnaVozila.setBounds(100, 155, 280, 35);
 		contentPane.add(btnDostupnaVozila);
-		
-		// 3. Dugme: Rezerviši
+
 		JButton btnRezervisi = new JButton("Rezerviši");
 		btnRezervisi.setFont(new Font("Tahoma", Font.PLAIN, 14));
-		btnRezervisi.setBounds(100, 230, 280, 45);
+		btnRezervisi.setBounds(100, 210, 280, 35);
 		contentPane.add(btnRezervisi);
+		
+		JButton btnSveRezervacije = new JButton("Sve Rezervacije");
+		btnSveRezervacije.setFont(new Font("Tahoma", Font.PLAIN, 14));
+		btnSveRezervacije.setBounds(100, 265, 280, 35);
+		contentPane.add(btnSveRezervacije);
+		
+		JButton btnOtkaziRez = new JButton("Otkazi rezervaciju");
+		btnOtkaziRez.setFont(new Font("Tahoma", Font.PLAIN, 14));
+		btnOtkaziRez.setBounds(100, 320, 280, 35);
+		contentPane.add(btnOtkaziRez);
+		
 
 
 		JButton btnOdjava = new JButton("Odjava");
-		btnOdjava.setBounds(365, 315, 100, 30);
+		btnOdjava.setBounds(365, 370, 100, 30);
 		contentPane.add(btnOdjava);
 		
 		btnPretplata.addActionListener(new ActionListener() {
@@ -106,8 +119,34 @@ public class KlijentProzor extends JFrame {
 		
 		btnRezervisi.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				RezervacijaProzor rezervacijaProzor = new RezervacijaProzor(rezervacijeMenadzer, osobaMenadzer, voziloMenadzer, finansijeMenadzer);
+				Osoba ulogovan = osobaMenadzer.getTrenutnoUlogovan();
+				Klijent k = osobaMenadzer.pronadjiKlijentaPoKorisnickomImenu(ulogovan.getKorisnickoIme());//mislim da ne mora provera jer nema sile da je ovde a da nije klijent
+				if(k.getPretplata()!=null && k.getPretplata().getDatumKraj().isAfter(LocalDate.now())) {
+					RezervacijaProzor rezervacijaProzor = new RezervacijaProzor(rezervacijeMenadzer, osobaMenadzer, voziloMenadzer, finansijeMenadzer);
+					rezervacijaProzor.setVisible(true);
+				}
+				else {
+					JOptionPane.showMessageDialog(
+							KlijentProzor.this, 
+							"Nemate važecu pretplatu", 
+							"Uplatite pretplatu",
+							JOptionPane.ERROR_MESSAGE
+						);
+				}
+			}
+		});
+		
+		btnSveRezervacije.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				PregledSveRezervacijeKlijent rezervacijaProzor = new PregledSveRezervacijeKlijent(rezervacijeMenadzer, osobaMenadzer);
 				rezervacijaProzor.setVisible(true);
+			}
+		});
+		
+		btnOtkaziRez.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				OtkazivanjeRezervacijeProzor to = new OtkazivanjeRezervacijeProzor(rezervacijeMenadzer, osobaMenadzer);
+				to.setVisible(true);
 			}
 		});
 		

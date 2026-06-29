@@ -239,7 +239,6 @@ public class RezervacijeMenadzer {
 	        return false;
 	    }
 	    
-	    // Ako je datum otkazivanja jednak današnjem ili jučerašnjem datumu
 	    if (datumOtkazivanja.equals(danas) || datumOtkazivanja.equals(juce)) {
 	        return true;
 	    }

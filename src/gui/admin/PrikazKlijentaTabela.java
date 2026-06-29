@@ -25,7 +25,7 @@ public class PrikazKlijentaTabela extends JFrame {
 	public PrikazKlijentaTabela(OsobaMenadzer osobaMenadzer) {
 		setTitle("Pregled svih klijenata");
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-		setBounds(100, 100, 850, 400); // Malo širi prozor zbog specifičnih datuma
+		setBounds(100, 100, 900, 400); // Malo širi prozor zbog specifičnih datuma
 		
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
@@ -39,7 +39,7 @@ public class PrikazKlijentaTabela extends JFrame {
 		contentPane.add(lblNaslov, BorderLayout.NORTH);
 
 		// Nazivi kolona prilagođeni specifičnim atributima Klijenta
-		String[] kolone = {"Email / Kor. ime", "Ime", "Prezime", "Pol", "Datum rođenja", "Telefon", "Kategorija", "Datum vozačke", "Broj kašnjenja"};
+		String[] kolone = {"Email / Kor. ime", "Ime", "Prezime", "Pol", "Datum rođenja", "Telefon", "Kategorija", "Datum vozačke", "Do kad vazi pretplata", "Broj kašnjenja"};
 		
 		// Inicijalizacija modela tabele (onemogućeno direktno menjanje ćelija dvoklikom)
 		tableModel = new DefaultTableModel(kolone, 0) {
@@ -54,6 +54,9 @@ public class PrikazKlijentaTabela extends JFrame {
 		
 		// Prolazak kroz listu svih klijenata i punjenje redova
 		for (Klijent kl : osobaMenadzer.getSviKlijenti()) {
+			String datumKrajPrikaz = (kl.getPretplata() == null || kl.getPretplata().getDatumKraj() == null) 
+                    ? "/" 
+                    : kl.getPretplata().getDatumKraj().toString();
 			Object[] red = {
 				kl.getEmail(), // Email igra ulogu i jedinstvenog korisničkog imena
 				kl.getIme(),
@@ -63,6 +66,7 @@ public class PrikazKlijentaTabela extends JFrame {
 				kl.getTelefon(),
 				kl.getKategorija(),
 				kl.getDatumVozacke(),
+				datumKrajPrikaz,
 				kl.getBrojKasnjenja()
 			};
 			tableModel.addRow(red);

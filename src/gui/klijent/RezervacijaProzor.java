@@ -6,6 +6,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
+import java.util.ArrayList;
 
 import javax.swing.JButton;
 import javax.swing.JDialog;
@@ -13,6 +14,7 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 
+import gui.admin.PrikazDodatnihUslugaTabela;
 import menadzer.FinansijeMenadzer;
 import menadzer.OsobaMenadzer;
 import menadzer.RezervacijeMenadzer;
@@ -20,19 +22,22 @@ import menadzer.VoziloMenadzer;
 import model.Klijent;
 import model.ModelVozila;
 import model.Osoba;
+import model.DodatnaUsluga;
+import model.Rezervacija;
 
 public class RezervacijaProzor extends JDialog {
 
 	private static final long serialVersionUID = 1L;
-	private JTextField txtModelVozilaId, txtKorisnickoIme, txtDatumOd;
+	private JTextField txtModelVozilaId, txtDatumOd, txtIdUsluge;
+	
+	// Lista u kojoj pamtimo privremeno dodate usluge pre nego što se kreira sama rezervacija
+	private ArrayList<DodatnaUsluga> odabraneUsluge = new ArrayList<>();
 
 	public RezervacijaProzor(RezervacijeMenadzer rezervacijeMenadzer, OsobaMenadzer osobaMenadzer, VoziloMenadzer voziloMenadzer, FinansijeMenadzer finansijeMenadzer) {
-		// Pretpostavka je da FinansijeMenadzer možeš dobiti iz nekog glavnog prozora ili preko rezervacijeMenadzer-a.
-		// Ako tvoj RezervacijeMenadzer već ima referencu na FinansijeMenadzer, prilagodi kod ispod.
 		
 		setTitle("Kreiranje Nove Rezervacije");
 		setModal(true);
-		setBounds(100, 100, 420, 280); 
+		setBounds(100, 100, 440, 360); // Povećana visina prozora zbog novih komponenti za usluge
 		getContentPane().setLayout(null);
 		setLocationRelativeTo(null);
 
@@ -57,18 +62,70 @@ public class RezervacijaProzor extends JDialog {
 			getContentPane().add(lbl);
 		}
 
+		// --- SEKCIJA ZA DODATNE USLUGE ---
+		JLabel lblIdUsluge = new JLabel("ID Dodatne Usluge:");
+		lblIdUsluge.setBounds(20, 170, 180, 20);
+		getContentPane().add(lblIdUsluge);
+
+		txtIdUsluge = new JTextField();
+		txtIdUsluge.setBounds(210, 170, 60, 20);
+		getContentPane().add(txtIdUsluge);
+
+		JButton btnDodajUslugu = new JButton("Dodaj Uslugu");
+		btnDodajUslugu.setBounds(280, 169, 120, 22);
+		getContentPane().add(btnDodajUslugu);
+		
+		PrikazDodatnihUslugaTabela prikazUsluga = new PrikazDodatnihUslugaTabela(rezervacijeMenadzer);
+		prikazUsluga.setLocation(20, 100);
+		prikazUsluga.setVisible(true);
+		
+		btnDodajUslugu.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				
+				try {
+					String unosIdUsluge = txtIdUsluge.getText().trim();
+					if(unosIdUsluge.isEmpty()) {
+						JOptionPane.showMessageDialog(RezervacijaProzor.this, 
+								"Molimo unesite ID usluge iz otvorene tabele.", "Obaveštenje", JOptionPane.WARNING_MESSAGE);
+						return;
+					}
+					
+					int idUsluge = Integer.parseInt(unosIdUsluge);
+					DodatnaUsluga du = rezervacijeMenadzer.pronadjiUsluguPoId(idUsluge);
+					
+					if (du != null) {
+						odabraneUsluge.add(du);
+						JOptionPane.showMessageDialog(RezervacijaProzor.this, 
+								"Usluga '" + du.getNaziv() + "' privremeno dodata u ovu rezervaciju!\n" +
+								"Ukupno dodato usluga: " + odabraneUsluge.size());
+						txtIdUsluge.setText("");
+					} else {
+						JOptionPane.showMessageDialog(RezervacijaProzor.this, 
+								"Usluga sa tim ID-jem ne postoji!", "Greška", JOptionPane.ERROR_MESSAGE);
+					}
+					
+				} catch (NumberFormatException ex) {
+					JOptionPane.showMessageDialog(RezervacijaProzor.this, 
+							"ID Usluge mora biti broj!", "Greška", JOptionPane.ERROR_MESSAGE);
+				}
+			}
+		});
+		// ----------------------------------
+
+		// Pomerena dugmad niže na y = 250
 		JButton btnKreiraj = new JButton("Kreiraj");
 		btnKreiraj.setBackground(Color.GREEN);
-		btnKreiraj.setBounds(80, 180, 100, 30); 
+		btnKreiraj.setBounds(80, 250, 100, 30); 
 		getContentPane().add(btnKreiraj);
 
 		JButton btnOtkazi = new JButton("Otkaži");
-		btnOtkazi.setBounds(200, 180, 100, 30); 
+		btnOtkazi.setBounds(200, 250, 100, 30); 
 		getContentPane().add(btnOtkazi);
 
 		// --- AKCIJA ZA DUGME KREIRAJ ---
 		btnKreiraj.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				prikazUsluga.setVisible(false);
 				try {
 					String modelIdStr = txtModelVozilaId.getText().trim();
 					String datumOdStr = txtDatumOd.getText().trim();
@@ -82,9 +139,7 @@ public class RezervacijaProzor extends JDialog {
 					int modelId = Integer.parseInt(modelIdStr);
 					LocalDate datumOd = LocalDate.parse(datumOdStr);
 
-					// 1. Korišćenje tvoje metode: pronadjiModelPoId
 					ModelVozila modelVozila = voziloMenadzer.pronadjiModelPoId(modelId);
-
 					if (modelVozila == null) {
 						JOptionPane.showMessageDialog(RezervacijaProzor.this, 
 								"Model vozila sa tim ID-jem ne postoji!", "Greška", JOptionPane.ERROR_MESSAGE);
@@ -100,16 +155,27 @@ public class RezervacijaProzor extends JDialog {
 						return;
 					}
 
-					// 3. Provera uslova iz tvoje metode `napraviRezervaciju`
 					boolean vozackaStarijaOd2Godine = trenutnoUlogovanKlijent.getDatumVozacke().isBefore(LocalDate.now().minusYears(2));
 					boolean otkazaoPoslednjih24h = rezervacijeMenadzer.isOtkazaoUPoslenjih24h(trenutnoUlogovanKlijent);
 
 					if (vozackaStarijaOd2Godine && !otkazaoPoslednjih24h) {
 						
+						// 1. Kreiranje same rezervacije
 						rezervacijeMenadzer.napraviRezervaciju(modelVozila, datumOd, trenutnoUlogovanKlijent, finansijeMenadzer);
 						
+						// 2. Vezivanje svih sakupljenih usluga za tu novu rezervaciju
+						ArrayList<Rezervacija> sveRez = rezervacijeMenadzer.getSveRezervacije();
+						if (!sveRez.isEmpty()) {
+							Rezervacija novaRezervacija = sveRez.get(sveRez.size() - 1); // Uzimamo poslednju kreiranu
+							
+							for (DodatnaUsluga du : odabraneUsluge) {
+								novaRezervacija.dodajDodatnuUslugu(du);
+							}
+						}
+						
 						JOptionPane.showMessageDialog(RezervacijaProzor.this, 
-								"Rezervacija uspešno kreirana!", "Uspeh", JOptionPane.INFORMATION_MESSAGE);
+								"Rezervacija uspešno kreirana sa " + odabraneUsluge.size() + " dodatnih usluga!", 
+								"Uspeh", JOptionPane.INFORMATION_MESSAGE);
 						dispose();
 					} else {
 						String razlog = "";

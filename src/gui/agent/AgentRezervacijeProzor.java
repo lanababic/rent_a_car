@@ -48,15 +48,14 @@ public class AgentRezervacijeProzor extends JFrame {
 		lblNaslov.setFont(new Font("Tahoma", Font.BOLD, 16));
 		lblNaslov.setBounds(20, 15, 300, 25);
 		contentPane.add(lblNaslov);
-		
-		// --- GLOBALNA METODA (UVEK DOSTUPNA) ---
+
+
 		btnOdbiIstekle = new JButton("Odbi Sve Istekle Rezervacije u Sistemu");
 		btnOdbiIstekle.setFont(new Font("Tahoma", Font.BOLD, 12));
 		btnOdbiIstekle.setBounds(60, 60, 360, 40);
 		btnOdbiIstekle.setEnabled(true); // <--- UVEK DOSTUPNO!
 		contentPane.add(btnOdbiIstekle);
-		
-		// --- POJEDINAČNA PRETRAGA ---
+
 		JLabel lblIdRez = new JLabel("Unesite ID za pojedinačnu obradu:");
 		lblIdRez.setFont(new Font("Tahoma", Font.PLAIN, 12));
 		lblIdRez.setBounds(20, 130, 200, 25);
@@ -74,32 +73,27 @@ public class AgentRezervacijeProzor extends JFrame {
 		lblPodaciRezervacije.setFont(new Font("Tahoma", Font.ITALIC, 12));
 		lblPodaciRezervacije.setBounds(20, 170, 440, 25);
 		contentPane.add(lblPodaciRezervacije);
-		
-		// --- POJEDINAČNE AKCIJE ---
+
+
 		btnPotvrdi = new JButton("Potvrdi Rezervaciju");
 		btnPotvrdi.setFont(new Font("Tahoma", Font.PLAIN, 13));
 		btnPotvrdi.setBounds(100, 210, 280, 40);
 		btnPotvrdi.setEnabled(false); 
 		contentPane.add(btnPotvrdi);
 		
-		btnOdbi = new JButton("Odbi Rezervaciju (Ručno)");
+		btnOdbi = new JButton("Odbi Rezervaciju");
 		btnOdbi.setFont(new Font("Tahoma", Font.PLAIN, 13));
 		btnOdbi.setBounds(100, 265, 280, 40);
 		btnOdbi.setEnabled(false);
 		contentPane.add(btnOdbi);
-		
-		// Dugme Nazad
+
+
 		JButton btnNazad = new JButton("Nazad");
 		btnNazad.setBounds(365, 335, 100, 30);
 		contentPane.add(btnNazad);
-		
-		// --- LOGIKA I AKCIJE NA DUGMIĆIMA ---
-		
-		// AKCIJA: Odbi sve istekle rezervacije (Radi u pozadini nad celom listom)
+
 		btnOdbiIstekle.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				// Pretpostavka: tvoj rezervacijeMenadzer ima metodu getSveRezervacije() ili slično.
-				// Prolazimo kroz sve rezervacije i čistimo one koje su prodate/zaboravljene na čekanju.
 				ArrayList<Rezervacija> sveRezervacije = rezervacijeMenadzer.getSveRezervacije(); 
 				
 				if (sveRezervacije != null && !sveRezervacije.isEmpty()) {
@@ -123,7 +117,9 @@ public class AgentRezervacijeProzor extends JFrame {
 					
 					if (pronadjenaRezervacija != null) {
 						lblPodaciRezervacije.setText("Model: " + pronadjenaRezervacija.getModelVozila() + 
-								" | Trenutni Status: " + pronadjenaRezervacija.getStatus());
+								" | Status: " + pronadjenaRezervacija.getStatus()+
+								" | od: " + pronadjenaRezervacija.getDatumOd()+
+								" | do: " + pronadjenaRezervacija.getDatumDo());
 						
 						btnPotvrdi.setEnabled(true);
 						btnOdbi.setEnabled(true);

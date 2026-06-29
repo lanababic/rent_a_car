@@ -139,11 +139,11 @@ public class IzmenaIzdavanjaForma extends JDialog {
 					}
 
 					// Validacija uslova pre slanja u menadžer (Čisto preventivni GUI ispis)
-					if (kmVracanje < kmPreuzimanje) {
-						JOptionPane.showMessageDialog(IzmenaIzdavanjaForma.this, 
-								"Kilometraža pri vraćanju mora biti veća od kilometraže pri preuzimanju!", "Greška", JOptionPane.WARNING_MESSAGE);
-						return;
-					}
+//					if (kmVracanje < kmPreuzimanje) {
+//						JOptionPane.showMessageDialog(IzmenaIzdavanjaForma.this, 
+//								"Kilometraža pri vraćanju mora biti veća od kilometraže pri preuzimanju!", "Greška", JOptionPane.WARNING_MESSAGE);
+//						return;
+//					}
 
 					// 3. Poziv tvoje backend metode `izmeniIzdaju`
 					izdavanjeMenadzer.izmeniIzdaju(

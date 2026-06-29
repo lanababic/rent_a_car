@@ -1,6 +1,7 @@
 package gui.agent;
 
 import java.awt.Font;
+import gui.admin.PrikazIzdavanjaTabela;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import javax.swing.JButton;
@@ -37,7 +38,7 @@ public class IznajmljivanjeProzor extends JFrame {
 		
 		setTitle("Upravljanje Iznajmljivanjem");
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE); // DISPOSE jer ne želimo da ugasi ceo program ako se zatvori ovaj podprozor
-		setBounds(100, 100, 500, 300);
+		setBounds(100, 100, 500, 370);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
@@ -62,44 +63,54 @@ public class IznajmljivanjeProzor extends JFrame {
 		btnPrimi.setBounds(100, 145, 280, 45);
 		contentPane.add(btnPrimi);
 		
+		JButton btnSvaIznajmljivanja = new JButton("Pregled svih iznajmljivanja");
+		btnSvaIznajmljivanja.setFont(new Font("Tahoma", Font.PLAIN, 14));
+		btnSvaIznajmljivanja.setBounds(100, 205, 280, 45);
+		contentPane.add(btnSvaIznajmljivanja);
+		
 		// Dugme za povratak nazad
 		JButton btnNazad = new JButton("Nazad");
-		btnNazad.setBounds(365, 215, 100, 30);
+		btnNazad.setBounds(365, 285, 100, 30);
 		contentPane.add(btnNazad);
-		
-		// --- AKCIJE NA DUGMIĆIMA ---
-		
-		// Akcija za Iznajmljivanje novog vozila
+
+
 		btnIznajmi.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				// TODO: Otvaranje forme/prozora za unos podataka o novom iznajmljivanju
+				
 				NovaIzdavanjaProzor noviUnos = new NovaIzdavanjaProzor(osobaMenadzer, voziloMenadzer, finansijeMenadzer,  izdavanjeMenadzer,  rezervacijeMenadzer);
 				noviUnos.setVisible(true);
 				dispose();
 			}
 		});
-		
-		// Akcija za Prijem vozila nazad na stanje
+
+
 		btnPrimi.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				// TODO: Otvaranje forme/prozora za vraćanje vozila i obračun troškova
+				
 				PrijemVozilaProzor prijem = new PrijemVozilaProzor(osobaMenadzer, voziloMenadzer, finansijeMenadzer,  izdavanjeMenadzer,  rezervacijeMenadzer);
 				prijem.setVisible(true);
 				dispose();
 			}
 		});
 		
-		// Akcija za povratak na AgentProzor
+		btnSvaIznajmljivanja.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				
+				PrikazIzdavanjaTabela prij = new PrikazIzdavanjaTabela(izdavanjeMenadzer);
+				prij.setVisible(true);
+			}
+		});
+
+
 		btnNazad.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				// Kreira se i otvara ponovo glavni agentski prozor, a ovaj se zatvara
 				AgentProzor agentProzor = new AgentProzor(osobaMenadzer, voziloMenadzer, finansijeMenadzer, izdavanjeMenadzer, rezervacijeMenadzer);
 				agentProzor.setVisible(true);
 				dispose(); 
 			}
 		});
 		
-		// Centriraj prozor na ekranu
+		
 		setLocationRelativeTo(null);
 	}
 }
